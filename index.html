@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TapTag NFC — Pulpit Produkcyjny v4.0</title>
+  <title>TapTag NFC — Pulpit Produkcyjny v4.1</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,22 +32,20 @@
 
   <div class="w-full max-w-4xl space-y-6">
     
-    <!-- Nagłówek -->
     <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-5">
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
           <span class="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
             </svg>
           </span>
           TapTag NFC
         </h1>
-        <p class="text-sm text-slate-400 mt-1">Pulpit magazynowy v4.0 (Batch CSV, natywne Web NFC, kontrola QR)</p>
+        <p class="text-sm text-slate-400 mt-1">Pulpit magazynowy v4.1 (Karty PDF, SMS/Email, Batch CSV, Web NFC)</p>
       </div>
     </header>
 
-    <!-- Sekcja 1: Połączenie -->
     <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
@@ -82,7 +80,6 @@
       </div>
     </section>
 
-    <!-- Nawigacja Zakładek -->
     <div class="flex border-b border-slate-800 gap-2 overflow-x-auto pb-1">
       <button type="button" onclick="switchTab('create')" id="tab-create"
         class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-sky-400 text-sky-400 flex items-center gap-2 whitespace-nowrap transition-colors">
@@ -111,7 +108,6 @@
       </button>
     </div>
 
-    <!-- Moduł 1: Tworzenie Pojedynczego Taga -->
     <div id="view-create" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-sm font-bold text-slate-200 mb-3">Wybierz Linię Produktową:</label>
@@ -171,7 +167,6 @@
         Wygeneruj nowy brelok magazynowy
       </button>
 
-      <!-- Panel Wynikowy po wygenerowaniu -->
       <div id="resultBox" class="hidden bg-slate-950 border border-emerald-500/30 rounded-2xl p-5 space-y-4">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
@@ -208,12 +203,25 @@
               </div>
             </div>
 
-            <!-- Przycisk bezpośredniego zapisu NFC -->
             <button type="button" id="btnWriteNfc" onclick="writeDirectNfc()"
               class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
               <span>Zapisz bezpośrednio na chipie NFC (telefonem)</span>
             </button>
+
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
+              <button type="button" onclick="printActivationCard()" 
+                class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Drukuj / Pobierz kartę PDF</span>
+              </button>
+
+              <button type="button" onclick="copyMessageForClient(this)" 
+                class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                <span>Kopiuj treść SMS / E-mail</span>
+              </button>
+            </div>
           </div>
 
           <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner mx-auto">
@@ -227,7 +235,6 @@
       </div>
     </div>
 
-    <!-- Moduł 2: Produkcja Seryjna (Batch) -->
     <div id="view-batch" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <h2 class="text-base font-bold text-white mb-1">Generowanie Hurtowe do Pliku CSV</h2>
@@ -269,7 +276,6 @@
       </div>
     </div>
 
-    <!-- Moduł 3: Zarządzanie Statusem -->
     <div id="view-status" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1">ID Tagu:</label>
@@ -278,7 +284,6 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- Przycisk: Wymuś aktywny -->
         <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
           <div>
             <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
@@ -292,7 +297,6 @@
           </button>
         </div>
 
-        <!-- Przycisk: Reset do PIN-u -->
         <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
           <div>
             <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
@@ -308,7 +312,6 @@
       </div>
     </div>
 
-    <!-- Moduł 4: Zmiana Linii -->
     <div id="view-changeLine" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1">ID Modyfikowanego Tagu:</label>
@@ -364,7 +367,6 @@
       </button>
     </div>
 
-    <!-- Moduł 5: Własne Tryby (Modes) -->
     <div id="view-customModes" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1">ID Modyfikowanego Tagu:</label>
@@ -417,7 +419,6 @@
       </button>
     </div>
 
-    <!-- Sekcja: Terminal HTTP -->
     <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
       <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -603,7 +604,7 @@
       const originalText = btn.innerHTML;
 
       if (!('NDEFReader' in window)) {
-        alert('Twoja przeglądarka nie obsługuje Web NFC. Użyj Chrome na Androidzie lub wgraj link ręcznie za pomocą aplikacji NFC Tools.');
+        alert('Twoja przeglądarka nie obsługuje Web NFC. Użyj Chrome na telefonie z Androidem lub wgraj link za pomocą aplikacji NFC Tools.');
         return;
       }
 
@@ -621,6 +622,120 @@
       } catch (err) {
         alert('Błąd zapisu NFC: ' + err.message);
       }
+    }
+
+    function copyMessageForClient(btn) {
+      const tagId = document.getElementById('resTagBadge').textContent.replace('#', '');
+      const pin = document.getElementById('resPin').textContent;
+      const tagUrl = document.getElementById('resTagUrl').value;
+
+      const msg = 
+`Witaj! Oto Twój brelok TapTag #${tagId}
+
+1. Zbliż telefon do breloka lub otwórz link:
+${tagUrl}
+
+2. Twój jednorazowy kod PIN do aktywacji:
+${pin}
+
+Wpisz kod PIN, aby przejść do panelu konfiguracji danych.`;
+
+      navigator.clipboard.writeText(msg).then(() => {
+        const oldText = btn.innerHTML;
+        btn.innerHTML = '<span>✓ Skopiowano treść!</span>';
+        setTimeout(() => { btn.innerHTML = oldText; }, 2000);
+      });
+    }
+
+    function printActivationCard() {
+      const tagId = document.getElementById('resTagBadge').textContent.replace('#', '');
+      const pin = document.getElementById('resPin').textContent;
+      const tagUrl = document.getElementById('resTagUrl').value;
+      
+      const qrCanvas = document.querySelector('#resQrCode canvas');
+      const qrDataUrl = qrCanvas ? qrCanvas.toDataURL('image/png') : '';
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="pl">
+        <head>
+          <meta charset="UTF-8">
+          <title>Karta Aktywacyjna TapTag #${tagId}</title>
+          <style>
+            @page { size: A6 portrait; margin: 0; }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              margin: 0;
+              padding: 24px;
+              background: #fff;
+              color: #0f172a;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              text-align: center;
+              box-sizing: border-box;
+              height: 100vh;
+              justify-content: space-between;
+            }
+            .header { margin-top: 10px; }
+            .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: #0f172a; }
+            .sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+            .qr-box {
+              border: 2px solid #e2e8f0;
+              padding: 14px;
+              border-radius: 16px;
+              display: inline-block;
+              margin: 15px 0;
+            }
+            .qr-box img { width: 140px; height: 140px; display: block; }
+            .pin-box {
+              background: #f8fafc;
+              border: 2px dashed #cbd5e1;
+              border-radius: 14px;
+              padding: 10px 18px;
+              margin-bottom: 12px;
+              width: 80%;
+              box-sizing: border-box;
+            }
+            .pin-label { font-size: 10px; text-transform: uppercase; font-weight: 700; color: #475569; letter-spacing: 0.5px; }
+            .pin-val { font-size: 26px; font-weight: 900; letter-spacing: 6px; color: #0284c7; font-family: monospace; margin-top: 2px; }
+            .instructions { font-size: 11px; color: #334155; line-height: 1.5; max-width: 240px; margin-bottom: 10px; }
+            .tag-url { font-size: 9px; color: #94a3b8; font-family: monospace; word-break: break-all; margin-bottom: 5px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">TapTag NFC</div>
+            <div class="sub">Brelok #${tagId}</div>
+          </div>
+
+          <div>
+            <div class="qr-box">
+              <img src="${qrDataUrl}" alt="Kod QR">
+            </div>
+
+            <div class="pin-box">
+              <div class="pin-label">Twój PIN aktywacyjny:</div>
+              <div class="pin-val">${pin}</div>
+            </div>
+
+            <div class="instructions">
+              Zbliż telefon do breloka lub zeskanuj kod QR aparatem, a następnie wpisz powyższy PIN, aby aktywować profil.
+            </div>
+          </div>
+
+          <div class="tag-url">${tagUrl}</div>
+
+          <script>
+            window.onload = function() {
+              window.print();
+            };
+          <\/script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
     }
 
     async function handleBatchGenerate() {
