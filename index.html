@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TapTag NFC — Pulpit Produkcyjny v4.1</title>
+  <title>TapTag NFC — Pulpit Produkcyjny v4.2</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,6 +32,7 @@
 
   <div class="w-full max-w-4xl space-y-6">
     
+    <!-- Nagłówek -->
     <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-5">
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
@@ -42,10 +43,11 @@
           </span>
           TapTag NFC
         </h1>
-        <p class="text-sm text-slate-400 mt-1">Pulpit magazynowy v4.1 (Karty PDF, SMS/Email, Batch CSV, Web NFC)</p>
+        <p class="text-sm text-slate-400 mt-1">Pulpit magazynowy v4.2 (Generowanie kart i QR po ID, Batch CSV, Web NFC)</p>
       </div>
     </header>
 
+    <!-- Sekcja 1: Połączenie -->
     <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
@@ -80,11 +82,17 @@
       </div>
     </section>
 
+    <!-- Nawigacja Zakładek -->
     <div class="flex border-b border-slate-800 gap-2 overflow-x-auto pb-1">
       <button type="button" onclick="switchTab('create')" id="tab-create"
         class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-sky-400 text-sky-400 flex items-center gap-2 whitespace-nowrap transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         Pojedynczy Tag
+      </button>
+      <button type="button" onclick="switchTab('fetchCard')" id="tab-fetchCard"
+        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        Karta / Druk po ID
       </button>
       <button type="button" onclick="switchTab('batch')" id="tab-batch"
         class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
@@ -108,6 +116,7 @@
       </button>
     </div>
 
+    <!-- Moduł 1: Tworzenie Pojedynczego Taga -->
     <div id="view-create" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-sm font-bold text-slate-200 mb-3">Wybierz Linię Produktową:</label>
@@ -167,6 +176,7 @@
         Wygeneruj nowy brelok magazynowy
       </button>
 
+      <!-- Panel Wynikowy po wygenerowaniu -->
       <div id="resultBox" class="hidden bg-slate-950 border border-emerald-500/30 rounded-2xl p-5 space-y-4">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
@@ -203,22 +213,22 @@
               </div>
             </div>
 
-            <button type="button" id="btnWriteNfc" onclick="writeDirectNfc()"
+            <button type="button" id="btnWriteNfc" onclick="writeDirectNfc('resTagUrl', this)"
               class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
               <span>Zapisz bezpośrednio na chipie NFC (telefonem)</span>
             </button>
 
             <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
-              <button type="button" onclick="printActivationCard()" 
+              <button type="button" onclick="printCardFromElements('resTagBadge', 'resPin', 'resTagUrl', '#resQrCode canvas')" 
                 class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 <span>Drukuj / Pobierz kartę PDF</span>
               </button>
 
-              <button type="button" onclick="copyMessageForClient(this)" 
+              <button type="button" onclick="copyMessageFromElements('resTagBadge', 'resPin', 'resTagUrl', this)" 
                 class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                 <span>Kopiuj treść SMS / E-mail</span>
               </button>
             </div>
@@ -227,14 +237,101 @@
           <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner mx-auto">
             <div id="resQrCode"></div>
             <div class="mt-2 flex gap-1">
-              <button type="button" onclick="renderQrMode('public')" id="btnQrPublic" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white">Publiczny</button>
-              <button type="button" onclick="renderQrMode('admin')" id="btnQrAdmin" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">Admin</button>
+              <button type="button" onclick="renderQrMode('public', 'resQrCode', 'btnQrPublic', 'btnQrAdmin')" id="btnQrPublic" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white">Publiczny</button>
+              <button type="button" onclick="renderQrMode('admin', 'resQrCode', 'btnQrPublic', 'btnQrAdmin')" id="btnQrAdmin" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">Admin</button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Moduł NOWY: Pobierz i Wygeneruj Kartę po ID Taga -->
+    <div id="view-fetchCard" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+      <div>
+        <h2 class="text-base font-bold text-white mb-1">Wygeneruj Kartę Aktywacyjną / QR dla Istniejącego Breloka</h2>
+        <p class="text-xs text-slate-400">Podaj ID breloka (np. z odlewu lub od klienta), aby odczytać jego aktualny kod PIN, linki oraz wygenerować plik PDF do druku.</p>
+      </div>
+
+      <div class="flex gap-2">
+        <input type="text" id="fetch_tagId" placeholder="Wpisz ID breloka (np. pet-9x2m4q)..."
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+        <button type="button" onclick="handleFetchTagCard()"
+          class="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm rounded-xl shrink-0 transition flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <span>Pobierz dane</span>
+        </button>
+      </div>
+
+      <!-- Wynik dla modułu pobierania po ID -->
+      <div id="fetchResultBox" class="hidden bg-slate-950 border border-sky-500/30 rounded-2xl p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-sky-400"></span> Dane breloka z bazy
+          </span>
+          <span id="fetchTagBadge" class="text-xs font-mono bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md font-bold"></span>
+        </div>
+
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-slate-400 block font-medium">Status w bazie:</span>
+            <span id="fetchStatus" class="text-xs font-bold text-amber-400 font-mono tracking-wider">UNCLAIMED</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] text-slate-400 block font-medium">PIN aktywacyjny:</span>
+            <span id="fetchPin" class="text-lg font-black text-sky-400 font-mono tracking-widest">------</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          <div class="space-y-3 md:col-span-2">
+            <div>
+              <span class="text-xs text-slate-300 font-semibold block mb-0.5">Link Publiczny (NFC / QR):</span>
+              <div class="flex gap-2">
+                <input type="text" id="fetchTagUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-sky-300 font-mono">
+                <button type="button" onclick="copyField('fetchTagUrl', this)" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-xs font-bold rounded-lg text-slate-950 shrink-0 transition">Kopiuj</button>
+              </div>
+            </div>
+            <div>
+              <span class="text-xs text-amber-400/90 font-medium block mb-0.5">Link Admina:</span>
+              <div class="flex gap-2">
+                <input type="text" id="fetchAdminUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-amber-200 font-mono">
+                <button type="button" onclick="copyField('fetchAdminUrl', this)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200 shrink-0 transition">Kopiuj</button>
+              </div>
+            </div>
+
+            <button type="button" onclick="writeDirectNfc('fetchTagUrl', this)"
+              class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Zapisz ten link na chipie NFC (telefonem)</span>
+            </button>
+
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
+              <button type="button" onclick="printCardFromElements('fetchTagBadge', 'fetchPin', 'fetchTagUrl', '#fetchQrCode canvas')" 
+                class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Drukuj / Pobierz kartę PDF</span>
+              </button>
+
+              <button type="button" onclick="copyMessageFromElements('fetchTagBadge', 'fetchPin', 'fetchTagUrl', this)" 
+                class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                <span>Kopiuj treść SMS / E-mail</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner mx-auto">
+            <div id="fetchQrCode"></div>
+            <div class="mt-2 flex gap-1">
+              <button type="button" onclick="renderQrMode('public', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin')" id="btnFetchQrPublic" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white">Publiczny</button>
+              <button type="button" onclick="renderQrMode('admin', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin')" id="btnFetchQrAdmin" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">Admin</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moduł 2: Produkcja Seryjna (Batch) -->
     <div id="view-batch" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <h2 class="text-base font-bold text-white mb-1">Generowanie Hurtowe do Pliku CSV</h2>
@@ -276,6 +373,7 @@
       </div>
     </div>
 
+    <!-- Moduł 3: Zarządzanie Statusem -->
     <div id="view-status" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1">ID Tagu:</label>
@@ -312,6 +410,7 @@
       </div>
     </div>
 
+    <!-- Moduł 4: Zmiana Linii -->
     <div id="view-changeLine" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1">ID Modyfikowanego Tagu:</label>
@@ -367,6 +466,7 @@
       </button>
     </div>
 
+    <!-- Moduł 5: Własne Tryby (Modes) -->
     <div id="view-customModes" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1">ID Modyfikowanego Tagu:</label>
@@ -419,6 +519,7 @@
       </button>
     </div>
 
+    <!-- Sekcja: Terminal HTTP -->
     <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
       <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -445,6 +546,8 @@
 
     let currentPublicUrl = '';
     let currentAdminUrl = '';
+    let fetchPublicUrl = '';
+    let fetchAdminUrl = '';
 
     function loadSavedConfig() {
       const savedUrl = localStorage.getItem('taptag_api_url');
@@ -550,8 +653,8 @@
       }
     }
 
-    function generateQr(url) {
-      const container = document.getElementById('resQrCode');
+    function generateQrToContainer(containerId, url) {
+      const container = document.getElementById(containerId);
       container.innerHTML = '';
       new QRCode(container, {
         text: url,
@@ -561,15 +664,19 @@
       });
     }
 
-    function renderQrMode(mode) {
-      const btnPublic = document.getElementById('btnQrPublic');
-      const btnAdmin = document.getElementById('btnQrAdmin');
+    function renderQrMode(mode, containerId, btnPubId, btnAdmId) {
+      const btnPublic = document.getElementById(btnPubId);
+      const btnAdmin = document.getElementById(btnAdmId);
+      const isFetch = containerId === 'fetchQrCode';
+      const pubUrl = isFetch ? fetchPublicUrl : currentPublicUrl;
+      const admUrl = isFetch ? fetchAdminUrl : currentAdminUrl;
+
       if (mode === 'public') {
-        generateQr(currentPublicUrl);
+        generateQrToContainer(containerId, pubUrl);
         btnPublic.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white';
         btnAdmin.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800';
       } else {
-        generateQr(currentAdminUrl);
+        generateQrToContainer(containerId, admUrl);
         btnAdmin.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white';
         btnPublic.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800';
       }
@@ -594,17 +701,41 @@
         document.getElementById('resTagUrl').value = res.data.tagUrl;
         document.getElementById('resAdminUrl').value = res.data.adminUrl;
         
-        renderQrMode('public');
+        renderQrMode('public', 'resQrCode', 'btnQrPublic', 'btnQrAdmin');
       }
     }
 
-    async function writeDirectNfc() {
-      const tagUrl = document.getElementById('resTagUrl').value.trim();
-      const btn = document.getElementById('btnWriteNfc');
-      const originalText = btn.innerHTML;
+    async function handleFetchTagCard() {
+      const tagId = document.getElementById('fetch_tagId').value.trim();
+      if (!tagId) {
+        alert('Podaj ID breloka!');
+        return;
+      }
+
+      const res = await callApi('/api/get-tag', { tagId });
+      if (res && res.ok && res.data.tagId) {
+        fetchPublicUrl = res.data.tagUrl;
+        fetchAdminUrl = res.data.adminUrl;
+
+        document.getElementById('fetchResultBox').classList.remove('hidden');
+        document.getElementById('fetchTagBadge').textContent = '#' + res.data.tagId;
+        document.getElementById('fetchStatus').textContent = (res.data.status || 'active').toUpperCase();
+        document.getElementById('fetchPin').textContent = res.data.claimPin || 'AKTYWNY (BEZ PIN)';
+        document.getElementById('fetchTagUrl').value = res.data.tagUrl;
+        document.getElementById('fetchAdminUrl').value = res.data.adminUrl;
+
+        renderQrMode('public', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin');
+      } else {
+        alert('Nie znaleziono tagu lub wystąpił błąd: ' + (res?.data || 'Brak danych'));
+      }
+    }
+
+    async function writeDirectNfc(inputElementId, btnElement) {
+      const tagUrl = document.getElementById(inputElementId).value.trim();
+      const originalText = btnElement.innerHTML;
 
       if (!('NDEFReader' in window)) {
-        alert('Twoja przeglądarka nie obsługuje Web NFC. Użyj Chrome na telefonie z Androidem lub wgraj link za pomocą aplikacji NFC Tools.');
+        alert('Twoja przeglądarka nie obsługuje Web NFC. Użyj Chrome na Androidzie lub wgraj link ręcznie za pomocą aplikacji NFC Tools.');
         return;
       }
 
@@ -613,21 +744,21 @@
         await ndef.write({
           records: [{ recordType: 'url', data: tagUrl }]
         });
-        btn.innerHTML = '<span>✓ ZAPISANO NA CHIP!</span>';
-        btn.classList.replace('bg-emerald-600', 'bg-sky-500');
+        btnElement.innerHTML = '<span>✓ ZAPISANO NA CHIP!</span>';
+        btnElement.classList.replace('bg-emerald-600', 'bg-sky-500');
         setTimeout(() => {
-          btn.innerHTML = originalText;
-          btn.classList.replace('bg-sky-500', 'bg-emerald-600');
+          btnElement.innerHTML = originalText;
+          btnElement.classList.replace('bg-sky-500', 'bg-emerald-600');
         }, 2500);
       } catch (err) {
         alert('Błąd zapisu NFC: ' + err.message);
       }
     }
 
-    function copyMessageForClient(btn) {
-      const tagId = document.getElementById('resTagBadge').textContent.replace('#', '');
-      const pin = document.getElementById('resPin').textContent;
-      const tagUrl = document.getElementById('resTagUrl').value;
+    function copyMessageFromElements(badgeId, pinId, urlId, btnElement) {
+      const tagId = document.getElementById(badgeId).textContent.replace('#', '');
+      const pin = document.getElementById(pinId).textContent;
+      const tagUrl = document.getElementById(urlId).value;
 
       const msg = 
 `Witaj! Oto Twój brelok TapTag #${tagId}
@@ -635,24 +766,24 @@
 1. Zbliż telefon do breloka lub otwórz link:
 ${tagUrl}
 
-2. Twój jednorazowy kod PIN do aktywacji:
+2. Twój kod PIN do panelu:
 ${pin}
 
-Wpisz kod PIN, aby przejść do panelu konfiguracji danych.`;
+Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
 
       navigator.clipboard.writeText(msg).then(() => {
-        const oldText = btn.innerHTML;
-        btn.innerHTML = '<span>✓ Skopiowano treść!</span>';
-        setTimeout(() => { btn.innerHTML = oldText; }, 2000);
+        const oldText = btnElement.innerHTML;
+        btnElement.innerHTML = '<span>✓ Skopiowano treść!</span>';
+        setTimeout(() => { btnElement.innerHTML = oldText; }, 2000);
       });
     }
 
-    function printActivationCard() {
-      const tagId = document.getElementById('resTagBadge').textContent.replace('#', '');
-      const pin = document.getElementById('resPin').textContent;
-      const tagUrl = document.getElementById('resTagUrl').value;
+    function printCardFromElements(badgeId, pinId, urlId, canvasSelector) {
+      const tagId = document.getElementById(badgeId).textContent.replace('#', '');
+      const pin = document.getElementById(pinId).textContent;
+      const tagUrl = document.getElementById(urlId).value;
       
-      const qrCanvas = document.querySelector('#resQrCode canvas');
+      const qrCanvas = document.querySelector(canvasSelector);
       const qrDataUrl = qrCanvas ? qrCanvas.toDataURL('image/png') : '';
 
       const printWindow = window.open('', '_blank');
