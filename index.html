@@ -10,7 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -217,7 +217,7 @@
             </button>
 
             <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
-              <button type="button" onclick="printCardFromElements('resTagBadge', 'resPin', 'resTagUrl', '#resQrCode canvas', this)" 
+              <button type="button" onclick="printCardFromElements('resTagBadge', 'resPin', 'resAdminUrl', this)" 
                 class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 <span>Pobierz kartę PDF (A6)</span>
@@ -302,7 +302,7 @@
             </button>
 
             <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
-              <button type="button" onclick="printCardFromElements('fetchTagBadge', 'fetchPin', 'fetchTagUrl', '#fetchQrCode canvas', this)" 
+              <button type="button" onclick="printCardFromElements('fetchTagBadge', 'fetchPin', 'fetchAdminUrl', this)" 
                 class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                 <span>Pobierz kartę PDF (A6)</span>
@@ -784,81 +784,92 @@ Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
     }
 
     const CARD_BRAND = 'TapTag';
-    const CARD_W = 420, CARD_H = 592;
+    const CARD_W = 560, CARD_H = 794;   // proporcje A5/A6 (1 : 1,414)
 
     function buildCardMarkup(d) {
-      // d: { tagId, pin, qr, shortUrl }  (wartości już po escapeHtml, qr = data URL)
-      const isCode = /^\d{4,8}$/.test(d.pinRaw);
-      const pinHtml = isCode
-        ? d.pinRaw.split('').map(c => '<span class="tc-d">' + c + '</span>').join('')
-        : '<span class="tc-pin-text">' + d.pin + '</span>';
+      // d: { tagId, pin, pinRaw, qr, adminUrl }  (tagId/pin/adminUrl już po escapeHtml, qr = data URL)
+      const hasPin = /^\d{4,8}$/.test(d.pinRaw);
+      const pinBand = hasPin
+        ? `<div class="tc-band-txt"><b>Ekran z prośbą o PIN?</b><span>Jeśli po zbliżeniu telefonu do breloka pojawi się ekran aktywacji, wpisz ten kod:</span></div>
+           <div class="tc-pin">${d.pinRaw.split('').map(c => '<i>' + c + '</i>').join('')}</div>`
+        : `<div class="tc-band-txt tc-band-wide"><b>PIN nie jest potrzebny.</b><span>Ten brelok jest już aktywny — wystarczy otworzyć panel z kroku 1.</span></div>`;
 
       return `
 <style>
   .tc, .tc * { box-sizing: border-box; margin: 0; padding: 0; }
-  .tc { position: relative; width: ${CARD_W}px; height: ${CARD_H}px; overflow: hidden; background: #f7f1e5; color: #14282b;
+  .tc { position: relative; width: ${CARD_W}px; height: ${CARD_H}px; overflow: hidden; background: #ffffff; color: #0f172a;
         font-family: 'Manrope', 'Segoe UI', Arial, sans-serif; }
-  .tc .abs { position: absolute; left: 0; right: 0; text-align: center; }
-  .tc-hero { position: absolute; left: 0; top: 0; width: ${CARD_W}px; height: 196px; display: block; }
-  .tc-brand { top: 30px; font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 36px; font-weight: 600; color: #fff; letter-spacing: 0.5px; line-height: 1; }
-  .tc-brand svg { width: 20px; height: 24px; margin-right: 9px; vertical-align: -2px; }
-  .tc-kind { top: 78px; font-size: 9.5px; font-weight: 700; letter-spacing: 2.6px; color: #f0c36b; text-transform: uppercase; }
-  .tc-hand { top: 98px; font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-style: italic; font-size: 12.5px; color: rgba(255,255,255,.82); }
-  .tc-qr { position: absolute; left: ${(CARD_W - 176) / 2}px; top: 158px; width: 176px; height: 176px; background: #fff; border-radius: 20px; box-shadow: 0 10px 26px rgba(13,53,56,.22); }
-  .tc-qr img { position: absolute; left: 16px; top: 16px; width: 144px; height: 144px; display: block; }
-  .tc-cap { top: 348px; font-size: 11.5px; font-weight: 600; color: #3d4f50; }
-  .tc-label { top: 386px; font-size: 9px; font-weight: 800; letter-spacing: 2.4px; color: #9a7421; text-transform: uppercase; }
-  .tc-pin { top: 406px; height: 50px; font-size: 0; line-height: 0; }
-  .tc-d { display: inline-block; width: 40px; height: 50px; margin: 0 5px; line-height: 46px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 34px; font-weight: 700; color: #0d3538; text-align: center; border-bottom: 3px solid #d9a441; }
-  .tc-pin-text { display: inline-block; line-height: 46px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 20px; font-weight: 700; color: #0d3538; border-bottom: 3px solid #d9a441; padding: 0 10px; }
-  .tc-steps { position: absolute; left: 40px; top: 470px; width: 340px; }
-  .tc-step { position: absolute; top: 0; width: 100px; text-align: center; }
-  .tc-step b { display: block; font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 600; font-size: 24px; line-height: 24px; color: #d9a441; margin-bottom: 4px; }
-  .tc-step span { display: block; font-size: 10.5px; line-height: 14px; font-weight: 600; color: #2f4244; }
-  .tc-rule { position: absolute; left: 40px; top: 540px; width: 340px; height: 1px; background: #d9c9a3; }
-  .tc-id { top: 550px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 10.5px; font-weight: 700; color: #0d3538; letter-spacing: 0.4px; }
-  .tc-url { top: 566px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 8.5px; color: #8a8f8a; }
-  .tc-strip { position: absolute; left: 0; bottom: 0; width: ${CARD_W}px; height: 8px; background: linear-gradient(90deg, #0d3538, #2a9d8f 45%, #d9a441); }
+  .tc .a { position: absolute; }
+  .tc-brand { left: 44px; top: 40px; font-size: 26px; font-weight: 800; letter-spacing: -0.4px; line-height: 1; color: #0f172a; }
+  .tc-id { right: 44px; top: 47px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11.5px; font-weight: 700; letter-spacing: 0.4px; color: #64748b; line-height: 1; }
+  .tc-title { left: 44px; top: 96px; width: 472px; font-size: 32px; font-weight: 800; letter-spacing: -0.6px; line-height: 38px; color: #0f172a; }
+  .tc-lead { left: 44px; top: 142px; width: 472px; font-size: 14.5px; font-weight: 500; line-height: 21px; color: #475569; }
+
+  .tc-panel { left: 44px; top: 190px; width: 472px; height: 244px; background: #f1f5f9; border-radius: 20px; }
+  .tc-qr { left: 28px; top: 30px; width: 184px; height: 184px; background: #ffffff; border-radius: 14px; }
+  .tc-qr img { position: absolute; left: 14px; top: 14px; width: 156px; height: 156px; display: block; }
+  .tc-s1 { left: 238px; top: 30px; width: 206px; }
+
+  .tc-n { display: block; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11.5px; font-weight: 700; letter-spacing: 1.2px; line-height: 14px; color: #0284c7; margin-bottom: 6px; }
+  .tc-h { display: block; font-size: 17px; font-weight: 800; letter-spacing: -0.2px; line-height: 22px; color: #0f172a; margin-bottom: 6px; }
+  .tc-p { display: block; font-size: 12.5px; font-weight: 500; line-height: 18px; color: #475569; }
+  .tc-or { display: block; margin-top: 12px; font-size: 11px; font-weight: 700; line-height: 14px; color: #0f172a; }
+  .tc-link { display: block; margin-top: 4px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 9px; font-weight: 500; line-height: 12.5px; color: #0369a1; word-break: break-all; text-decoration: underline; }
+
+  .tc-s2 { left: 44px; top: 462px; width: 224px; }
+  .tc-s3 { left: 292px; top: 462px; width: 224px; }
+
+  .tc-band { left: 44px; top: 588px; width: 472px; height: 92px; background: #0f172a; border-radius: 18px; }
+  .tc-band-txt { position: absolute; left: 24px; top: 0; width: 232px; height: 92px; display: flex; flex-direction: column; justify-content: center; }
+  .tc-band-txt b { display: block; font-size: 14px; font-weight: 800; line-height: 18px; color: #ffffff; margin-bottom: 3px; }
+  .tc-band-txt span { display: block; font-size: 11px; font-weight: 500; line-height: 15px; color: #cbd5e1; }
+  .tc-band-wide { width: 424px; }
+  .tc-pin { position: absolute; right: 22px; top: 0; height: 92px; width: 200px; text-align: right; font-size: 0; line-height: 0; }
+  .tc-pin i { display: inline-block; font-style: normal; width: 29px; margin-left: 3px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 29px; font-weight: 700; line-height: 92px; text-align: center; color: #38bdf8; }
+
+  .tc-rule { left: 44px; top: 706px; width: 472px; height: 1px; background: #e2e8f0; }
+  .tc-warn { left: 44px; top: 718px; width: 472px; font-size: 11px; font-weight: 500; line-height: 16px; color: #64748b; }
+  .tc-warn b { font-weight: 700; color: #334155; }
+  .tc-foot { left: 44px; top: 762px; width: 472px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.3px; line-height: 12px; color: #94a3b8; }
 </style>
 <div class="tc">
-  <svg class="tc-hero" viewBox="0 0 ${CARD_W} 196" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="tcg1" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#0b2f33"/><stop offset="0.55" stop-color="#17625f"/><stop offset="1" stop-color="#2a9d8f"/>
-      </linearGradient>
-      <linearGradient id="tcg2" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#d9a441"/><stop offset="1" stop-color="#f3d38a"/>
-      </linearGradient>
-    </defs>
-    <path d="M0 0H${CARD_W}V150C340 192 262 118 186 152C112 184 56 176 0 152Z" fill="url(#tcg1)"/>
-    <path d="M0 128C70 160 130 150 196 122C262 94 340 130 ${CARD_W} 100V150C340 192 262 118 186 152C112 184 56 176 0 152Z" fill="#e0a93f" fill-opacity="0.16"/>
-    <path d="M0 158C56 182 112 190 186 158C262 124 340 198 ${CARD_W} 156" fill="none" stroke="url(#tcg2)" stroke-width="2.4" stroke-linecap="round"/>
-  </svg>
+  <div class="a tc-brand">${CARD_BRAND}</div>
+  <div class="a tc-id">Brelok #${d.tagId}</div>
 
-  <div class="abs tc-brand"><svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg"><path d="M12 1.5C12 1.5 3.5 11.2 3.5 17.4a8.5 8.5 0 0017 0C20.5 11.2 12 1.5 12 1.5z" fill="#f0c36b"/><path d="M8.2 17.6a4.2 4.2 0 003 4" fill="none" stroke="#fff" stroke-opacity="0.75" stroke-width="1.6" stroke-linecap="round"/></svg>${CARD_BRAND}</div>
-  <div class="abs tc-kind">Brelok NFC · żywica epoksydowa</div>
-  <div class="abs tc-hand">Robiony ręcznie — każdy egzemplarz jest jedyny w swoim rodzaju</div>
+  <div class="a tc-title">Aktywacja Twojego breloka</div>
+  <div class="a tc-lead">To Twoja karta dostępu. Trzy proste kroki i brelok jest gotowy.</div>
 
-  <div class="tc-qr"><img src="${d.qr}" alt="Kod QR"></div>
-  <div class="abs tc-cap">Zbliż telefon do breloka lub zeskanuj kod</div>
-
-  <div class="abs tc-label">Twój kod aktywacyjny</div>
-  <div class="abs tc-pin">${pinHtml}</div>
-
-  <div class="tc-steps">
-    <div class="tc-step" style="left:0"><b>1</b><span>Zbliż telefon<br>do breloka</span></div>
-    <div class="tc-step" style="left:120px"><b>2</b><span>Wpisz kod<br>aktywacyjny</span></div>
-    <div class="tc-step" style="left:240px"><b>3</b><span>Ustaw funkcję<br>i swoje dane</span></div>
+  <div class="a tc-panel">
+    <div class="a tc-qr"><img src="${d.qr}" alt="Kod QR"></div>
+    <div class="a tc-s1">
+      <span class="tc-n">KROK 01</span>
+      <span class="tc-h">Zeskanuj kod QR</span>
+      <span class="tc-p">Użyj aparatu w telefonie. Otworzy się Twój panel, w którym ustawiasz brelok.</span>
+      <span class="tc-or">Nie możesz zeskanować? Otwórz link:</span>
+      <span class="tc-link">${d.adminUrl}</span>
+    </div>
   </div>
 
-  <div class="tc-rule"></div>
-  <div class="abs tc-id">Egzemplarz #${d.tagId}</div>
-  <div class="abs tc-url">${d.shortUrl}</div>
-  <div class="tc-strip"></div>
+  <div class="a tc-s2">
+    <span class="tc-n">KROK 02</span>
+    <span class="tc-h">Ustaw swój brelok</span>
+    <span class="tc-p">W panelu wybierz funkcję (np. wizytówka, zwierzak, Wi-Fi), uzupełnij dane i kliknij „Zapisz zmiany”.</span>
+  </div>
+  <div class="a tc-s3">
+    <span class="tc-n">KROK 03</span>
+    <span class="tc-h">Gotowe</span>
+    <span class="tc-p">Zbliż telefon do breloka — wyświetli się Twój profil. Dane zmienisz w każdej chwili tym samym linkiem.</span>
+  </div>
+
+  <div class="a tc-band">${pinBand}</div>
+
+  <div class="a tc-rule"></div>
+  <div class="a tc-warn"><b>Zachowaj tę kartę.</b> Kod QR i link dają dostęp do edycji breloka — nie udostępniaj ich innym osobom.</div>
+  <div class="a tc-foot">${CARD_BRAND} · Brelok NFC</div>
 </div>`;
     }
 
-    async function printCardFromElements(badgeId, pinId, urlId, canvasSelector, btnElement) {
+    async function printCardFromElements(badgeId, pinId, adminUrlId, btnElement) {
       if (!window.html2canvas || !window.jspdf) {
         alert('Nie załadowały się biblioteki do generowania PDF. Sprawdź połączenie z internetem i odśwież stronę.');
         return;
@@ -869,24 +880,24 @@ Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
       try {
         const tagIdRaw = document.getElementById(badgeId).textContent.replace('#', '').trim();
         const pinRaw = document.getElementById(pinId).textContent.trim();
-        const tagUrlRaw = document.getElementById(urlId).value.trim();
+        const adminUrlRaw = document.getElementById(adminUrlId).value.trim();
+        if (!adminUrlRaw) { alert('Brak linku do panelu administracyjnego dla tego breloka.'); return; }
 
         const html = buildCardMarkup({
           tagId: escapeHtml(tagIdRaw),
           pin: escapeHtml(pinRaw),
           pinRaw: pinRaw,
-          qr: makeHiResQr(tagUrlRaw, 576),
-          shortUrl: escapeHtml(tagUrlRaw.replace(/^https?:\/\//, ''))
+          qr: makeHiResQr(adminUrlRaw, 624),
+          adminUrl: escapeHtml(adminUrlRaw)
         });
 
         // czekamy na czcionki, żeby PDF wyglądał tak samo jak podgląd
         try {
           await Promise.all([
-            document.fonts.load('600 36px Fraunces'),
-            document.fonts.load('italic 400 12px Fraunces'),
-            document.fonts.load('600 12px Manrope'),
-            document.fonts.load('800 9px Manrope'),
-            document.fonts.load('700 34px "JetBrains Mono"')
+            document.fonts.load('800 32px Manrope'),
+            document.fonts.load('500 12px Manrope'),
+            document.fonts.load('700 12px "JetBrains Mono"'),
+            document.fonts.load('500 9px "JetBrains Mono"')
           ]);
           await document.fonts.ready;
         } catch (e) { /* brak czcionek = użyje zapasowych */ }
@@ -897,9 +908,20 @@ Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
         document.body.appendChild(stage);
         await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-        const canvas = await html2canvas(stage.querySelector('.tc'), {
+        const card = stage.querySelector('.tc');
+        const box = card.getBoundingClientRect();
+        const rectOf = (sel) => {
+          const el = card.querySelector(sel);
+          if (!el) return null;
+          const r = el.getBoundingClientRect();
+          return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
+        };
+        const linkRect = rectOf('.tc-link');
+        const qrRect = rectOf('.tc-qr');
+
+        const canvas = await html2canvas(card, {
           scale: 4,
-          backgroundColor: '#f7f1e5',
+          backgroundColor: '#ffffff',
           useCORS: true,
           logging: false,
           width: CARD_W,
@@ -911,10 +933,18 @@ Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
         });
         document.body.removeChild(stage);
 
+        const PAGE_W = 148, PAGE_H = 210;               // A5 (te same proporcje co A6 – po wydruku 1:1 lub pomniejszeniu)
+        const k = PAGE_W / CARD_W;
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ unit: 'mm', format: [105, 148], orientation: 'portrait', compress: true });
+        const pdf = new jsPDF({ unit: 'mm', format: [PAGE_W, PAGE_H], orientation: 'portrait', compress: true });
         pdf.setProperties({ title: 'Karta aktywacyjna ' + CARD_BRAND + ' #' + tagIdRaw });
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 105, 148, undefined, 'FAST');
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, PAGE_W, PAGE_H, undefined, 'FAST');
+
+        // klikalny link w PDF: na adresie pod kodem QR i na samym kodzie QR
+        [linkRect, qrRect].forEach(r => {
+          if (r) pdf.link(r.x * k, r.y * k, r.w * k, r.h * k, { url: adminUrlRaw });
+        });
+
         pdf.save(CARD_BRAND + '-' + tagIdRaw.replace(/[^a-z0-9_-]/gi, '_') + '.pdf');
       } catch (err) {
         alert('Nie udało się wygenerować PDF: ' + (err && err.message ? err.message : err));
