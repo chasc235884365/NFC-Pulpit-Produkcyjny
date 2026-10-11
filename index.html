@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="pl" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TapTag NFC — Pulpit Produkcyjny v4.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    #consoleLog::-webkit-scrollbar { width: 6px; height: 6px; }
+    #consoleLog::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    #consoleLog::-webkit-scrollbar-track { background: #090d16; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col items-center p-4 sm:p-6 lg:p-8">
+
+  <div class="w-full max-w-4xl space-y-6">
+    
+    <!-- Nagłówek -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-5">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+          <span class="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+            </svg>
+          </span>
+          TapTag NFC
+        </h1>
+        <p class="text-sm text-slate-400 mt-1">Pulpit magazynowy v4.0 (Batch CSV, natywne Web NFC, kontrola QR)</p>
+      </div>
+    </header>
+
+    <!-- Sekcja 1: Połączenie -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+          <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          Połączenie z API Cloudflare Workers
+        </h2>
+        <span id="saveHint" class="text-xs text-emerald-400 opacity-0 transition-opacity">Zapisano w pamięci</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">API Base URL</label>
+          <input type="text" id="apiUrl" value="https://go.taptag.workers.dev" placeholder="https://go.taptag.workers.dev"
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">X-Api-Secret</label>
+          <div class="relative">
+            <input type="password" id="apiSecret" placeholder="Wklej API_SECRET..."
+              class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono">
+            <button type="button" id="toggleSecret" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nawigacja Zakładek -->
+    <div class="flex border-b border-slate-800 gap-2 overflow-x-auto pb-1">
+      <button type="button" onclick="switchTab('create')" id="tab-create"
+        class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-sky-400 text-sky-400 flex items-center gap-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Pojedynczy Tag
+      </button>
+      <button type="button" onclick="switchTab('batch')" id="tab-batch"
+        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        Produkcja Seryjna (CSV)
+      </button>
+      <button type="button" onclick="switchTab('status')" id="tab-status"
+        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        Zarządzaj Statusem
+      </button>
+      <button type="button" onclick="switchTab('changeLine')" id="tab-changeLine"
+        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        Zmień Linię
+      </button>
+      <button type="button" onclick="switchTab('customModes')" id="tab-customModes"
+        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+        Własne Tryby
+      </button>
+    </div>
+
+    <!-- Moduł 1: Tworzenie Pojedynczego Taga -->
+    <div id="view-create" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+      <div>
+        <label class="block text-sm font-bold text-slate-200 mb-3">Wybierz Linię Produktową:</label>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <label class="cursor-pointer">
+            <input type="radio" name="create_line" value="pet" class="peer sr-only" checked>
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">🐾</span>
+              <span class="text-xs font-bold block">Pet</span>
+              <span class="text-[10px] text-slate-500 font-mono">pet-xxxxxx</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="create_line" value="safe" class="peer sr-only">
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">🛡️</span>
+              <span class="text-xs font-bold block">Safe</span>
+              <span class="text-[10px] text-slate-500 font-mono">safe-xxxxxx</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="create_line" value="pro" class="peer sr-only">
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">💼</span>
+              <span class="text-xs font-bold block">Pro</span>
+              <span class="text-[10px] text-slate-500 font-mono">pro-xxxxxx</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="create_line" value="home" class="peer sr-only">
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">📶</span>
+              <span class="text-xs font-bold block">Home</span>
+              <span class="text-[10px] text-slate-500 font-mono">home-xxxxxx</span>
+            </div>
+          </label>
+          <label class="cursor-pointer col-span-2 sm:col-span-1">
+            <input type="radio" name="create_line" value="all" class="peer sr-only">
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">⭐</span>
+              <span class="text-xs font-bold block">All</span>
+              <span class="text-[10px] text-slate-500 font-mono">all-xxxxxx</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Własny Tag ID (opcjonalne, serwer domyślnie doda prefiks linii):</label>
+        <input type="text" id="create_tagId" placeholder="Zostaw puste, aby serwer nadał prefiks i losowe znaki"
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+      </div>
+
+      <button type="button" onclick="handleCreateTag()"
+        class="w-full py-3.5 bg-sky-500 hover:bg-sky-400 active:scale-[0.99] text-slate-950 font-bold rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        Wygeneruj nowy brelok magazynowy
+      </button>
+
+      <!-- Panel Wynikowy po wygenerowaniu -->
+      <div id="resultBox" class="hidden bg-slate-950 border border-emerald-500/30 rounded-2xl p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Gotowy do zapisu NFC
+          </span>
+          <span id="resTagBadge" class="text-xs font-mono bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md font-bold"></span>
+        </div>
+
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-slate-400 block font-medium">Status magazynowy:</span>
+            <span id="resStatus" class="text-xs font-bold text-amber-400 font-mono tracking-wider">UNCLAIMED</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] text-slate-400 block font-medium">6-cyfrowy PIN aktywacyjny:</span>
+            <span id="resPin" class="text-lg font-black text-sky-400 font-mono tracking-widest">------</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          <div class="space-y-3 md:col-span-2">
+            <div>
+              <span class="text-xs text-slate-300 font-semibold block mb-0.5">Link Publiczny (ZAPISZ NA CHIP NFC / NADRUK):</span>
+              <div class="flex gap-2">
+                <input type="text" id="resTagUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-sky-300 font-mono">
+                <button type="button" onclick="copyField('resTagUrl', this)" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-xs font-bold rounded-lg text-slate-950 shrink-0 transition">Kopiuj</button>
+              </div>
+            </div>
+            <div>
+              <span class="text-xs text-amber-400/90 font-medium block mb-0.5">Link Admina (dla klienta po wpisaniu PIN-u):</span>
+              <div class="flex gap-2">
+                <input type="text" id="resAdminUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-amber-200 font-mono">
+                <button type="button" onclick="copyField('resAdminUrl', this)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200 shrink-0 transition">Kopiuj</button>
+              </div>
+            </div>
+
+            <!-- Przycisk bezpośredniego zapisu NFC -->
+            <button type="button" id="btnWriteNfc" onclick="writeDirectNfc()"
+              class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Zapisz bezpośrednio na chipie NFC (telefonem)</span>
+            </button>
+          </div>
+
+          <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner mx-auto">
+            <div id="resQrCode"></div>
+            <div class="mt-2 flex gap-1">
+              <button type="button" onclick="renderQrMode('public')" id="btnQrPublic" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white">Publiczny</button>
+              <button type="button" onclick="renderQrMode('admin')" id="btnQrAdmin" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">Admin</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moduł 2: Produkcja Seryjna (Batch) -->
+    <div id="view-batch" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+      <div>
+        <h2 class="text-base font-bold text-white mb-1">Generowanie Hurtowe do Pliku CSV</h2>
+        <p class="text-xs text-slate-400">Wygeneruj serię breloków dla partii produkcyjnej. Wszystkie identyfikatory, kody PIN oraz linki zostaną przygotowane i wyeksportowane do pliku arkusza.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Wybierz Linię:</label>
+          <select id="batch_line" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 font-mono">
+            <option value="pet">Pet (pet-xxxxxx)</option>
+            <option value="safe">Safe (safe-xxxxxx)</option>
+            <option value="pro">Pro (pro-xxxxxx)</option>
+            <option value="home">Home (home-xxxxxx)</option>
+            <option value="all">All (all-xxxxxx)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Liczba sztuk w serii:</label>
+          <input type="number" id="batch_count" value="10" min="1" max="100"
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 font-mono">
+        </div>
+      </div>
+
+      <button type="button" id="btnRunBatch" onclick="handleBatchGenerate()"
+        class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Wygeneruj serię i pobierz plik CSV</span>
+      </button>
+
+      <div id="batchProgressBox" class="hidden space-y-2">
+        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+          <div id="batchProgressBar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-slate-400 font-mono">
+          <span id="batchProgressText">Przygotowywanie...</span>
+          <span id="batchPercentText">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moduł 3: Zarządzanie Statusem -->
+    <div id="view-status" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">ID Tagu:</label>
+        <input type="text" id="status_tagId" placeholder="Wklej tagId (np. pet-9x2m4q)..."
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Przycisk: Wymuś aktywny -->
+        <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+          <div>
+            <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Aktywuj natychmiast (ACTIVE)
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Usuwa wymóg PIN-u. Brelok od razu wyświetla profil publiczny i odblokowuje panel.</p>
+          </div>
+          <button type="button" onclick="handleSetStatus('active')"
+            class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition">
+            Ustaw status ACTIVE
+          </button>
+        </div>
+
+        <!-- Przycisk: Reset do PIN-u -->
+        <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+          <div>
+            <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span> Resetuj do parowania (UNCLAIMED)
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Blokuje profil. Brelok wymaga wpisania PIN-u przy skanowaniu. Generuje nowy PIN, jeśli brakowało.</p>
+          </div>
+          <button type="button" onclick="handleSetStatus('unclaimed')"
+            class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition">
+            Zresetuj do UNCLAIMED
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moduł 4: Zmiana Linii -->
+    <div id="view-changeLine" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">ID Modyfikowanego Tagu:</label>
+        <input type="text" id="update_tagId" placeholder="Wklej tagId..."
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-slate-200 mb-3">Wybierz nową linię:</label>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <label class="cursor-pointer">
+            <input type="radio" name="update_line" value="pet" class="peer sr-only" checked>
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">🐾</span>
+              <span class="text-xs font-bold block">Pet</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="update_line" value="safe" class="peer sr-only">
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">🛡️</span>
+              <span class="text-xs font-bold block">Safe</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="update_line" value="pro" class="peer sr-only">
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">💼</span>
+              <span class="text-xs font-bold block">Pro</span>
+            </div>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="update_line" value="home" class="peer sr-only">
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">📶</span>
+              <span class="text-xs font-bold block">Home</span>
+            </div>
+          </label>
+          <label class="cursor-pointer col-span-2 sm:col-span-1">
+            <input type="radio" name="update_line" value="all" class="peer sr-only">
+            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+              <span class="block text-xl mb-1">⭐</span>
+              <span class="text-xs font-bold block">All</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <button type="button" onclick="handleUpdateLine()"
+        class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-sky-400 font-bold rounded-xl border border-sky-500/20 shadow-lg transition flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Zaktualizuj linię tagu
+      </button>
+    </div>
+
+    <!-- Moduł 5: Własne Tryby (Modes) -->
+    <div id="view-customModes" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">ID Modyfikowanego Tagu:</label>
+        <input type="text" id="modes_tagId" placeholder="Wklej tagId..."
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-slate-200 mb-3">Zaznacz dozwolone tryby dla klienta:</label>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="pet" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
+            <span class="text-sm font-medium">🐾 Zwierzak</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="lost" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
+            <span class="text-sm font-medium">🔑 Zguba</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="ice" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
+            <span class="text-sm font-medium">🚑 Karta ICE</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="biz" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
+            <span class="text-sm font-medium">💼 Wizytówka</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="hub" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
+            <span class="text-sm font-medium">🌐 Social Hub</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="pay" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
+            <span class="text-sm font-medium">💳 Płatność</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="wifi" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
+            <span class="text-sm font-medium">📶 Wi-Fi</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="link" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
+            <span class="text-sm font-medium">🔗 Link</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="button" onclick="handleUpdateModes()"
+        class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-sky-400 font-bold rounded-xl border border-sky-500/20 shadow-lg transition flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        Zapisz zestaw funkcji
+      </button>
+    </div>
+
+    <!-- Sekcja: Terminal HTTP -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+      <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="flex gap-1.5">
+            <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+          </div>
+          <span class="text-xs font-mono font-semibold text-slate-400 ml-2">Terminal Żądań HTTP</span>
+        </div>
+        <button type="button" onclick="clearConsole()" class="text-xs text-slate-500 hover:text-slate-300 font-mono transition">Wyczyść</button>
+      </div>
+      <div id="consoleLog" class="p-4 bg-[#090d16] font-mono text-xs text-slate-300 overflow-x-auto max-h-72 space-y-3">
+        <div class="text-slate-500">// Gotowy do pracy. Odpowiedzi serwera pojawią się tutaj...</div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const apiUrlInput = document.getElementById('apiUrl');
+    const apiSecretInput = document.getElementById('apiSecret');
+    const saveHint = document.getElementById('saveHint');
+
+    let currentPublicUrl = '';
+    let currentAdminUrl = '';
+
+    function loadSavedConfig() {
+      const savedUrl = localStorage.getItem('taptag_api_url');
+      const savedSecret = localStorage.getItem('taptag_api_secret');
+      if (savedUrl) apiUrlInput.value = savedUrl;
+      if (savedSecret) apiSecretInput.value = savedSecret;
+    }
+
+    function saveConfig() {
+      localStorage.setItem('taptag_api_url', apiUrlInput.value.trim());
+      localStorage.setItem('taptag_api_secret', apiSecretInput.value.trim());
+      saveHint.classList.remove('opacity-0');
+      setTimeout(() => saveHint.classList.add('opacity-0'), 1500);
+    }
+
+    apiUrlInput.addEventListener('input', saveConfig);
+    apiSecretInput.addEventListener('input', saveConfig);
+
+    document.getElementById('toggleSecret').addEventListener('click', () => {
+      apiSecretInput.type = apiSecretInput.type === 'password' ? 'text' : 'password';
+    });
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-sky-400', 'text-sky-400', 'font-bold');
+        btn.classList.add('border-transparent', 'text-slate-400', 'font-semibold');
+      });
+
+      const targetView = document.getElementById('view-' + tabId);
+      const targetBtn = document.getElementById('tab-' + tabId);
+
+      if (targetView) targetView.classList.remove('hidden');
+      if (targetBtn) {
+        targetBtn.classList.add('border-sky-400', 'text-sky-400', 'font-bold');
+        targetBtn.classList.remove('border-transparent', 'text-slate-400', 'font-semibold');
+      }
+    }
+
+    const consoleLog = document.getElementById('consoleLog');
+
+    function logConsole(method, url, payload, status, responseData) {
+      const time = new Date().toLocaleTimeString();
+      const statusColor = status >= 200 && status < 300 ? 'text-emerald-400' : 'text-rose-400';
+
+      const entry = document.createElement('div');
+      entry.className = 'border-l-2 border-slate-700 pl-3 py-1 space-y-1';
+      entry.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">[${time}]</span>
+          <span class="font-bold text-sky-400">${method}</span>
+          <span class="text-slate-300 break-all">${url}</span>
+          <span class="font-bold ${statusColor} ml-auto">HTTP ${status}</span>
+        </div>
+        ${payload ? `<div class="text-slate-400"><span class="text-slate-500">Payload:</span> ${escapeHtml(JSON.stringify(payload))}</div>` : ''}
+        <div class="${statusColor}"><span class="text-slate-500">Response:</span> ${escapeHtml(typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData)}</div>
+      `;
+      consoleLog.appendChild(entry);
+      consoleLog.scrollTop = consoleLog.scrollHeight;
+    }
+
+    function clearConsole() {
+      consoleLog.innerHTML = '<div class="text-slate-500">// Konsola wyczyszczona.</div>';
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    async function callApi(endpoint, body) {
+      const baseUrl = apiUrlInput.value.trim().replace(/\/+$/, '');
+      const secret = apiSecretInput.value.trim();
+
+      if (!secret) {
+        alert('Podaj klucz X-Api-Secret w sekcji połączenia!');
+        return null;
+      }
+
+      const fullUrl = baseUrl + endpoint;
+      try {
+        const res = await fetch(fullUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Api-Secret': secret
+          },
+          body: JSON.stringify(body)
+        });
+
+        let data;
+        const text = await res.text();
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = text;
+        }
+
+        logConsole('POST', fullUrl, body, res.status, data);
+        return { ok: res.ok, status: res.status, data };
+      } catch (err) {
+        logConsole('POST', fullUrl, body, 0, err.message);
+        return { ok: false, status: 0, data: err.message };
+      }
+    }
+
+    function generateQr(url) {
+      const container = document.getElementById('resQrCode');
+      container.innerHTML = '';
+      new QRCode(container, {
+        text: url,
+        width: 136,
+        height: 136,
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    function renderQrMode(mode) {
+      const btnPublic = document.getElementById('btnQrPublic');
+      const btnAdmin = document.getElementById('btnQrAdmin');
+      if (mode === 'public') {
+        generateQr(currentPublicUrl);
+        btnPublic.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white';
+        btnAdmin.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800';
+      } else {
+        generateQr(currentAdminUrl);
+        btnAdmin.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white';
+        btnPublic.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800';
+      }
+    }
+
+    async function handleCreateTag() {
+      const line = document.querySelector('input[name="create_line"]:checked').value;
+      const tagId = document.getElementById('create_tagId').value.trim();
+      
+      const payload = { line };
+      if (tagId) payload.tagId = tagId;
+
+      const res = await callApi('/api/create-tag', payload);
+      if (res && res.ok && res.data.tagId) {
+        currentPublicUrl = res.data.tagUrl;
+        currentAdminUrl = res.data.adminUrl;
+
+        document.getElementById('resultBox').classList.remove('hidden');
+        document.getElementById('resTagBadge').textContent = '#' + res.data.tagId;
+        document.getElementById('resStatus').textContent = (res.data.status || 'unclaimed').toUpperCase();
+        document.getElementById('resPin').textContent = res.data.claimPin || 'BRAK';
+        document.getElementById('resTagUrl').value = res.data.tagUrl;
+        document.getElementById('resAdminUrl').value = res.data.adminUrl;
+        
+        renderQrMode('public');
+      }
+    }
+
+    async function writeDirectNfc() {
+      const tagUrl = document.getElementById('resTagUrl').value.trim();
+      const btn = document.getElementById('btnWriteNfc');
+      const originalText = btn.innerHTML;
+
+      if (!('NDEFReader' in window)) {
+        alert('Twoja przeglądarka nie obsługuje Web NFC. Użyj Chrome na Androidzie lub wgraj link ręcznie za pomocą aplikacji NFC Tools.');
+        return;
+      }
+
+      try {
+        const ndef = new NDEFReader();
+        await ndef.write({
+          records: [{ recordType: 'url', data: tagUrl }]
+        });
+        btn.innerHTML = '<span>✓ ZAPISANO NA CHIP!</span>';
+        btn.classList.replace('bg-emerald-600', 'bg-sky-500');
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.replace('bg-sky-500', 'bg-emerald-600');
+        }, 2500);
+      } catch (err) {
+        alert('Błąd zapisu NFC: ' + err.message);
+      }
+    }
+
+    async function handleBatchGenerate() {
+      const line = document.getElementById('batch_line').value;
+      const count = parseInt(document.getElementById('batch_count').value, 10);
+      const btn = document.getElementById('btnRunBatch');
+      const progressBox = document.getElementById('batchProgressBox');
+      const progressBar = document.getElementById('batchProgressBar');
+      const progressText = document.getElementById('batchProgressText');
+      const percentText = document.getElementById('batchPercentText');
+
+      if (!count || count < 1 || count > 100) {
+        alert('Podaj liczbę od 1 do 100!');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+      progressBox.classList.remove('hidden');
+
+      const records = [];
+
+      for (let i = 1; i <= count; i++) {
+        const percent = Math.round((i / count) * 100);
+        progressBar.style.width = percent + '%';
+        progressText.textContent = `Generowanie breloka ${i} z ${count}...`;
+        percentText.textContent = percent + '%';
+
+        const res = await callApi('/api/create-tag', { line });
+        if (res && res.ok && res.data.tagId) {
+          records.push({
+            tagId: res.data.tagId,
+            pin: res.data.claimPin,
+            line: line,
+            tagUrl: res.data.tagUrl,
+            adminUrl: res.data.adminUrl,
+            createdAt: new Date().toISOString()
+          });
+        }
+      }
+
+      if (records.length > 0) {
+        downloadCsv(records, `taptag_batch_${line}_${Date.now()}.csv`);
+      }
+
+      btn.disabled = false;
+      btn.classList.remove('opacity-50');
+      progressText.textContent = `Ukończono! Wygenerowano ${records.length} sztuk.`;
+    }
+
+    function downloadCsv(data, filename) {
+      const headers = ['Tag ID', 'PIN Aktywacyjny', 'Linia', 'Link Publiczny (NFC)', 'Link Admina', 'Data'];
+      const rows = data.map(r => [
+        `"${r.tagId}"`,
+        `"${r.pin}"`,
+        `"${r.line}"`,
+        `"${r.tagUrl}"`,
+        `"${r.adminUrl}"`,
+        `"${r.createdAt}"`
+      ]);
+
+      const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(e => e.join(';'))].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    async function handleSetStatus(newStatus) {
+      const tagId = document.getElementById('status_tagId').value.trim();
+      if (!tagId) {
+        alert('Podaj ID tagu!');
+        return;
+      }
+      await callApi('/api/update-tag', { tagId, status: newStatus });
+    }
+
+    async function handleUpdateLine() {
+      const tagId = document.getElementById('update_tagId').value.trim();
+      const line = document.querySelector('input[name="update_line"]:checked').value;
+
+      if (!tagId) {
+        alert('Podaj ID tagu!');
+        return;
+      }
+
+      await callApi('/api/update-tag', { tagId, line });
+    }
+
+    async function handleUpdateModes() {
+      const tagId = document.getElementById('modes_tagId').value.trim();
+      const checkedBoxes = Array.from(document.querySelectorAll('input[name="custom_mode"]:checked'));
+      const modes = checkedBoxes.map(b => b.value);
+
+      if (!tagId) {
+        alert('Podaj ID tagu!');
+        return;
+      }
+      if (modes.length === 0) {
+        alert('Wybierz co najmniej 1 tryb!');
+        return;
+      }
+
+      await callApi('/api/update-tag', { tagId, modes });
+    }
+
+    function copyField(elementId, btnElement) {
+      const el = document.getElementById(elementId);
+      el.select();
+      navigator.clipboard.writeText(el.value).then(() => {
+        if (btnElement) {
+          const oldText = btnElement.textContent;
+          btnElement.textContent = '✓ Skopiowano';
+          setTimeout(() => { btnElement.textContent = oldText; }, 1800);
+        }
+      });
+    }
+
+    loadSavedConfig();
+  </script>
+</body>
+</html>
