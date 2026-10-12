@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TapTag NFC — Pulpit Produkcyjny v4.2</title>
+  <title>RingTag NFC — Pulpit Produkcyjny v4.2</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -42,7 +42,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
             </svg>
           </span>
-          TapTag NFC
+          RingTag NFC
         </h1>
         <p class="text-sm text-slate-400 mt-1">Pulpit magazynowy v4.2 (Generowanie kart i QR po ID, Batch CSV, Web NFC)</p>
       </div>
@@ -220,10 +220,10 @@
               <button type="button" onclick="printCardFromElements('resTagBadge', 'resPin', 'resAdminUrl', this)" 
                 class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Pobierz kartę PDF (A6)</span>
+                <span>Pobierz kartę PDF</span>
               </button>
 
-              <button type="button" onclick="copyMessageFromElements('resTagBadge', 'resPin', 'resTagUrl', this)" 
+              <button type="button" onclick="copyMessageFromElements('resTagBadge', 'resPin', 'resAdminUrl', this)" 
                 class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                 <span>Kopiuj treść SMS / E-mail</span>
@@ -305,10 +305,10 @@
               <button type="button" onclick="printCardFromElements('fetchTagBadge', 'fetchPin', 'fetchAdminUrl', this)" 
                 class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Pobierz kartę PDF (A6)</span>
+                <span>Pobierz kartę PDF</span>
               </button>
 
-              <button type="button" onclick="copyMessageFromElements('fetchTagBadge', 'fetchPin', 'fetchTagUrl', this)" 
+              <button type="button" onclick="copyMessageFromElements('fetchTagBadge', 'fetchPin', 'fetchAdminUrl', this)" 
                 class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                 <span>Kopiuj treść SMS / E-mail</span>
@@ -749,21 +749,23 @@
       }
     }
 
-    function copyMessageFromElements(badgeId, pinId, urlId, btnElement) {
-      const tagId = document.getElementById(badgeId).textContent.replace('#', '');
-      const pin = document.getElementById(pinId).textContent;
-      const tagUrl = document.getElementById(urlId).value;
+    function copyMessageFromElements(badgeId, pinId, adminUrlId, btnElement) {
+      const tagId = document.getElementById(badgeId).textContent.replace('#', '').trim();
+      const pin = document.getElementById(pinId).textContent.trim();
+      const adminUrl = document.getElementById(adminUrlId).value.trim();
+      if (!adminUrl) { alert('Brak linku do panelu administracyjnego dla tego breloka.'); return; }
+      const hasPin = /^\d{4,8}$/.test(pin);
 
-      const msg = 
-`Witaj! Oto Twój brelok TapTag #${tagId}
+      const msg =
+`Witaj! Oto Twój brelok ${CARD_BRAND} #${tagId}
 
-1. Zbliż telefon do breloka lub otwórz link:
-${tagUrl}
-
-2. Twój kod PIN do panelu:
+1. Otwórz swój panel i ustaw brelok (zapisz ten link — dzięki niemu zawsze wrócisz do edycji):
+${adminUrl}
+` + (hasPin ? `
+2. Jeśli po zbliżeniu telefonu do breloka zobaczysz ekran aktywacji, wpisz kod PIN:
 ${pin}
-
-Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
+` : '') + `
+Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
 
       navigator.clipboard.writeText(msg).then(() => {
         const oldText = btnElement.innerHTML;
@@ -783,7 +785,7 @@ Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
       return dataUrl;
     }
 
-    const CARD_BRAND = 'TapTag';
+    const CARD_BRAND = 'RingTag';
     const CARD_W = 560, CARD_H = 794;   // proporcje A5/A6 (1 : 1,414)
 
     function buildCardMarkup(d) {
@@ -864,7 +866,7 @@ Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
   <div class="a tc-band">${pinBand}</div>
 
   <div class="a tc-rule"></div>
-  <div class="a tc-warn"><b>Zachowaj tę kartę.</b> Kod QR i link dają dostęp do edycji breloka — nie udostępniaj ich innym osobom.</div>
+  <div class="a tc-warn"><b>Zachowaj tę kartę lub zapisz link w telefonie</b> — to jedyny sposób, by wrócić do panelu. Link i kod QR dają dostęp do edycji breloka, więc nie udostępniaj ich innym osobom.</div>
   <div class="a tc-foot">${CARD_BRAND} · Brelok NFC</div>
 </div>`;
     }
@@ -993,7 +995,7 @@ Wpisz kod PIN, aby przejść do konfiguracji swoich danych.`;
       }
 
       if (records.length > 0) {
-        downloadCsv(records, `taptag_batch_${line}_${Date.now()}.csv`);
+        downloadCsv(records, `ringtag_batch_${line}_${Date.now()}.csv`);
       }
 
       btn.disabled = false;
