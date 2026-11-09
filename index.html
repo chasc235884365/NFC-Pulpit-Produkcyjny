@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RingTag NFC — Pulpit Produkcyjny v4.2</title>
+  <title>TapCraft NFC — Pulpit Produkcyjny v4.2</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -42,7 +42,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
             </svg>
           </span>
-          RingTag NFC
+          TapCraft NFC
         </h1>
         <p class="text-sm text-slate-400 mt-1">Pulpit magazynowy v4.2 (Generowanie kart i QR po ID, Batch CSV, Web NFC)</p>
       </div>
@@ -55,7 +55,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
-          Połączenie z API Cloudflare Workers
+          Połączenie z API Serwera (Mikrus / Cloudflare)
         </h2>
         <span id="saveHint" class="text-xs text-emerald-400 opacity-0 transition-opacity">Zapisano w pamięci</span>
       </div>
@@ -63,13 +63,13 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">API Base URL</label>
-          <input type="text" id="apiUrl" value="https://go.taptag.workers.dev" placeholder="https://go.taptag.workers.dev"
+          <input type="text" id="apiUrl" value="https://franchise-skins-addressed-malpractice.trycloudflare.com" placeholder="https://franchise-skins-addressed-malpractice.trycloudflare.com"
             class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">X-Api-Secret</label>
           <div class="relative">
-            <input type="password" id="apiSecret" placeholder="Wklej API_SECRET..."
+            <input type="password" id="apiSecret" placeholder="Wklej API_SECRET z pliku .env..."
               class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono">
             <button type="button" id="toggleSecret" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -541,15 +541,15 @@
     let fetchAdminUrl = '';
 
     function loadSavedConfig() {
-      const savedUrl = localStorage.getItem('taptag_api_url');
-      const savedSecret = localStorage.getItem('taptag_api_secret');
+      const savedUrl = localStorage.getItem('tapcraft_api_url');
+      const savedSecret = localStorage.getItem('tapcraft_api_secret');
       if (savedUrl) apiUrlInput.value = savedUrl;
       if (savedSecret) apiSecretInput.value = savedSecret;
     }
 
     function saveConfig() {
-      localStorage.setItem('taptag_api_url', apiUrlInput.value.trim());
-      localStorage.setItem('taptag_api_secret', apiSecretInput.value.trim());
+      localStorage.setItem('tapcraft_api_url', apiUrlInput.value.trim());
+      localStorage.setItem('tapcraft_api_secret', apiSecretInput.value.trim());
       saveHint.classList.remove('opacity-0');
       setTimeout(() => saveHint.classList.add('opacity-0'), 1500);
     }
@@ -785,11 +785,10 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
       return dataUrl;
     }
 
-    const CARD_BRAND = 'RingTag';
+    const CARD_BRAND = 'TapCraft';
     const CARD_W = 560, CARD_H = 794;   // proporcje A5/A6 (1 : 1,414)
 
     function buildCardMarkup(d) {
-      // d: { tagId, pin, pinRaw, qr, adminUrl }  (tagId/pin/adminUrl już po escapeHtml, qr = data URL)
       const hasPin = /^\d{4,8}$/.test(d.pinRaw);
       const pinBand = hasPin
         ? `<div class="tc-band-txt"><b>Ekran z prośbą o PIN?</b><span>Jeśli po zbliżeniu telefonu do breloka pojawi się ekran aktywacji, wpisz ten kod:</span></div>
@@ -893,7 +892,6 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
           adminUrl: escapeHtml(adminUrlRaw)
         });
 
-        // czekamy na czcionki, żeby PDF wyglądał tak samo jak podgląd
         try {
           await Promise.all([
             document.fonts.load('800 32px Manrope'),
@@ -902,7 +900,7 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
             document.fonts.load('500 9px "JetBrains Mono"')
           ]);
           await document.fonts.ready;
-        } catch (e) { /* brak czcionek = użyje zapasowych */ }
+        } catch (e) { }
 
         const stage = document.createElement('div');
         stage.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + CARD_W + 'px;height:' + CARD_H + 'px;';
@@ -935,14 +933,13 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
         });
         document.body.removeChild(stage);
 
-        const PAGE_W = 148, PAGE_H = 210;               // A5 (te same proporcje co A6 – po wydruku 1:1 lub pomniejszeniu)
+        const PAGE_W = 148, PAGE_H = 210;
         const k = PAGE_W / CARD_W;
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ unit: 'mm', format: [PAGE_W, PAGE_H], orientation: 'portrait', compress: true });
         pdf.setProperties({ title: 'Karta aktywacyjna ' + CARD_BRAND + ' #' + tagIdRaw });
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, PAGE_W, PAGE_H, undefined, 'FAST');
 
-        // klikalny link w PDF: na adresie pod kodem QR i na samym kodzie QR
         [linkRect, qrRect].forEach(r => {
           if (r) pdf.link(r.x * k, r.y * k, r.w * k, r.h * k, { url: adminUrlRaw });
         });
@@ -995,7 +992,7 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
       }
 
       if (records.length > 0) {
-        downloadCsv(records, `ringtag_batch_${line}_${Date.now()}.csv`);
+        downloadCsv(records, `tapcraft_batch_${line}_${Date.now()}.csv`);
       }
 
       btn.disabled = false;
