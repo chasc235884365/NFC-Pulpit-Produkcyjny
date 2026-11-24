@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TapCraft NFC — Pulpit Produkcyjny v4.3</title>
+  <title>TapCraft NFC — Studio Produkcyjne v5.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Manrope', 'sans-serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace'],
           }
         }
@@ -25,56 +25,51 @@
     }
   </script>
   <style>
-    #consoleLog::-webkit-scrollbar { width: 6px; height: 6px; }
-    #consoleLog::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    #consoleLog::-webkit-scrollbar-track { background: #090d16; }
+    body { background-color: #060911; color: #f1f5f9; }
+    .glass-panel { background: #0d1322; border: 1px solid #1e293b; }
+    .input-field { background: #070b14; border: 1px solid #263349; transition: border-color 0.15s, box-shadow 0.15s; }
+    .input-field:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12); outline: none; }
+    #consoleLog::-webkit-scrollbar { width: 5px; height: 5px; }
+    #consoleLog::-webkit-scrollbar-thumb { background: #263349; border-radius: 99px; }
+    #consoleLog::-webkit-scrollbar-track { background: transparent; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col items-center p-4 sm:p-6 lg:p-8">
+<body class="min-h-screen font-sans antialiased flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
 
-  <div class="w-full max-w-4xl space-y-6">
+  <div class="w-full max-w-5xl space-y-6">
     
-    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-5">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-        <img src="svg/tapcraft-logo-poziome-na-ciemnym.svg" alt="TapCraft" class="h-10 w-auto object-contain"
-             onerror="this.outerHTML='<span class=\'text-2xl font-extrabold tracking-tight text-white\'>Tap<span class=\'text-sky-400\'>Craft</span></span>'">
-        <div class="hidden sm:block h-6 w-px bg-slate-800"></div>
-        <div>
-          <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Pulpit Produkcyjny v4.3
-          </span>
-          <p class="text-xs text-slate-400 mt-0.5">Generowanie tagów, karty aktywacyjne PDF, eksport CSV i Web NFC</p>
-        </div>
+    <!-- NAGŁÓWEK -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-800/80">
+      <div class="flex items-center gap-4">
+        <img src="svg/tapcraft-logo-poziome-na-ciemnym.svg" alt="TapCraft" class="h-9 w-auto object-contain"
+             onerror="this.outerHTML='<div class=\'flex items-center gap-2\'><span class=\'w-3 h-3 rounded-full bg-sky-400\'></span><span class=\'text-2xl font-extrabold tracking-tight text-white\'>Tap<span class=\'text-sky-400\'>Craft</span></span></div>'">
+        <span class="hidden sm:inline-block h-5 w-px bg-slate-800"></span>
+        <span class="text-xs font-mono font-semibold uppercase tracking-widest text-slate-400">Studio Produkcyjne</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span id="saveHint" class="text-xs font-medium text-emerald-400 opacity-0 transition-opacity duration-300">✓ Konfiguracja zapisana</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-400">v5.0 · Cytrus VPS</span>
       </div>
     </header>
 
-    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-          <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-          </svg>
-          Połączenie z API Serwera (Mikrus + Cytrus)
-        </h2>
-        <span id="saveHint" class="text-xs text-emerald-400 opacity-0 transition-opacity font-medium">Zapisano w pamięci</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">API Base URL</label>
+    <!-- KONFIGURACJA API -->
+    <section class="glass-panel rounded-2xl p-5">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        <div class="md:col-span-5">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Adres Serwera (API Base URL)</label>
           <input type="text" id="apiUrl" value="https://tapcraft.cytr.us" placeholder="https://tapcraft.cytr.us"
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono transition">
+            class="input-field w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono">
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">X-Api-Secret</label>
+        <div class="md:col-span-7">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Klucz Autoryzacji (X-Api-Secret)</label>
           <div class="relative">
-            <input type="password" id="apiSecret" placeholder="Wklej API_SECRET z pliku .env..."
-              class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono transition">
-            <button type="button" id="toggleSecret" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200" title="Pokaż / ukryj klucz">
+            <input type="password" id="apiSecret" placeholder="Wklej API_SECRET z pliku .env na serwerze..."
+              class="input-field w-full rounded-xl pl-3.5 pr-11 py-2.5 text-sm text-slate-100 font-mono">
+            <button type="button" id="toggleSecret" class="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300 transition" title="Pokaż / ukryj klucz">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
               </svg>
             </button>
           </div>
@@ -82,263 +77,291 @@
       </div>
     </section>
 
-    <nav class="flex border-b border-slate-800 gap-1 overflow-x-auto pb-1">
+    <!-- NAWIGACJA (PILLS) -->
+    <nav class="flex flex-wrap gap-1.5 p-1.5 bg-slate-900/90 border border-slate-800/80 rounded-2xl">
       <button type="button" onclick="switchTab('create')" id="tab-create"
-        class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-sky-400 text-sky-400 flex items-center gap-2 whitespace-nowrap transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        Pojedynczy Tag
+        class="tab-btn flex-1 min-w-[130px] px-3.5 py-2.5 rounded-xl text-xs font-bold bg-sky-500 text-slate-950 shadow-sm transition flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/></svg>
+        Nowy Brelok
       </button>
       <button type="button" onclick="switchTab('fetchCard')" id="tab-fetchCard"
-        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-        Karta / Druk po ID
+        class="tab-btn flex-1 min-w-[130px] px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        Karta / PDF po ID
       </button>
       <button type="button" onclick="switchTab('batch')" id="tab-batch"
-        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
+        class="tab-btn flex-1 min-w-[130px] px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition flex items-center justify-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-        Produkcja Seryjna (CSV)
+        Seria CSV
       </button>
       <button type="button" onclick="switchTab('status')" id="tab-status"
-        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
+        class="tab-btn flex-1 min-w-[130px] px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition flex items-center justify-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-        Zarządzaj Statusem
+        Status PIN
       </button>
       <button type="button" onclick="switchTab('changeLine')" id="tab-changeLine"
-        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
+        class="tab-btn flex-1 min-w-[130px] px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition flex items-center justify-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
         Zmień Linię
       </button>
       <button type="button" onclick="switchTab('customModes')" id="tab-customModes"
-        class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+        class="tab-btn flex-1 min-w-[130px] px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
         Własne Tryby
       </button>
     </nav>
 
-    <!-- ZAKŁADKA 1: POJEDYNCZY TAG -->
-    <div id="view-create" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <!-- ZAKŁADKA 1: NOWY BRELOK -->
+    <div id="view-create" class="tab-content glass-panel rounded-2xl p-6 space-y-6">
       <div>
-        <label class="block text-sm font-bold text-slate-200 mb-3">Wybierz Linię Produktową:</label>
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-300">1. Wybierz linię produktową</label>
+          <span class="text-xs text-slate-500">Określa zestaw dostępnych funkcji</span>
+        </div>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <label class="cursor-pointer">
             <input type="radio" name="create_line" value="pet" class="peer sr-only" checked>
-            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
-              <span class="block text-xl mb-1">🐾</span>
-              <span class="text-xs font-bold block">Pet</span>
-              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">pet-xxxxxx</span>
+            <div class="p-4 rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 hover:border-slate-700 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-lg">🐾</span>
+                <span class="text-[10px] font-mono text-slate-500">pet-</span>
+              </div>
+              <div class="text-sm font-bold text-white">Pet</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Identyfikator</div>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="create_line" value="safe" class="peer sr-only">
-            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
-              <span class="block text-xl mb-1">🛡️</span>
-              <span class="text-xs font-bold block">Safe</span>
-              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">safe-xxxxxx</span>
+            <div class="p-4 rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 hover:border-slate-700 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-lg">🛡️</span>
+                <span class="text-[10px] font-mono text-slate-500">safe-</span>
+              </div>
+              <div class="text-sm font-bold text-white">Safe</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Zguba + ICE</div>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="create_line" value="pro" class="peer sr-only">
-            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
-              <span class="block text-xl mb-1">💼</span>
-              <span class="text-xs font-bold block">Pro</span>
-              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">pro-xxxxxx</span>
+            <div class="p-4 rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 hover:border-slate-700 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-lg">💼</span>
+                <span class="text-[10px] font-mono text-slate-500">pro-</span>
+              </div>
+              <div class="text-sm font-bold text-white">Pro</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Biznes + Hub</div>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="create_line" value="home" class="peer sr-only">
-            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
-              <span class="block text-xl mb-1">📶</span>
-              <span class="text-xs font-bold block">Home</span>
-              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">home-xxxxxx</span>
+            <div class="p-4 rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 hover:border-slate-700 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-lg">📶</span>
+                <span class="text-[10px] font-mono text-slate-500">home-</span>
+              </div>
+              <div class="text-sm font-bold text-white">Home</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Wi-Fi QR</div>
             </div>
           </label>
           <label class="cursor-pointer col-span-2 sm:col-span-1">
             <input type="radio" name="create_line" value="all" class="peer sr-only">
-            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
-              <span class="block text-xl mb-1">⭐</span>
-              <span class="text-xs font-bold block">All</span>
-              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">all-xxxxxx</span>
+            <div class="p-4 rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 hover:border-slate-700 transition">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-lg">⭐</span>
+                <span class="text-[10px] font-mono text-slate-500">all-</span>
+              </div>
+              <div class="text-sm font-bold text-white">All</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Wszystkie 8</div>
             </div>
           </label>
         </div>
       </div>
 
-      <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Własny Tag ID (opcjonalne, serwer domyślnie doda prefiks linii):</label>
-        <input type="text" id="create_tagId" placeholder="Zostaw puste, aby serwer nadał prefiks i losowe znaki"
-          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono transition">
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end pt-2">
+        <div class="sm:col-span-7">
+          <label class="block text-xs font-semibold text-slate-400 mb-1.5">2. Własny identyfikator (opcjonalnie)</label>
+          <input type="text" id="create_tagId" placeholder="Zostaw puste dla losowego ID (np. pet-a8k2m9)"
+            class="input-field w-full rounded-xl px-3.5 py-3 text-sm text-slate-100 placeholder-slate-600 font-mono">
+        </div>
+        <div class="sm:col-span-5">
+          <button type="button" onclick="handleCreateTag()"
+            class="w-full py-3 px-5 bg-sky-500 hover:bg-sky-400 active:scale-[0.99] text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-sky-500/15 transition flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            Utwórz brelok w bazie
+          </button>
+        </div>
       </div>
 
-      <button type="button" onclick="handleCreateTag()"
-        class="w-full py-3.5 bg-sky-500 hover:bg-sky-400 active:scale-[0.99] text-slate-950 font-extrabold rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center justify-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-        Wygeneruj nowy brelok magazynowy
-      </button>
-
-      <div id="resultBox" class="hidden bg-slate-950 border border-emerald-500/30 rounded-2xl p-5 space-y-4">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Gotowy do zapisu NFC
-          </span>
-          <span id="resTagBadge" class="text-xs font-mono bg-slate-800 text-slate-200 px-3 py-1 rounded-lg font-bold border border-slate-700"></span>
-        </div>
-
-        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
-          <div>
-            <span class="text-[11px] text-slate-400 block font-medium">Status magazynowy:</span>
-            <span id="resStatus" class="text-xs font-bold text-amber-400 font-mono tracking-wider">UNCLAIMED</span>
-          </div>
-          <div class="text-right">
-            <span class="text-[11px] text-slate-400 block font-medium">6-cyfrowy PIN aktywacyjny:</span>
-            <span id="resPin" class="text-xl font-black text-sky-400 font-mono tracking-widest">------</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-          <div class="space-y-3 md:col-span-2">
-            <div>
-              <span class="text-xs text-slate-300 font-semibold block mb-1">Link Publiczny (ZAPISZ NA CHIP NFC / NADRUK):</span>
-              <div class="flex gap-2">
-                <input type="text" id="resTagUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-sky-300 font-mono">
-                <button type="button" onclick="copyField('resTagUrl', this)" class="px-3.5 py-1.5 bg-sky-500 hover:bg-sky-400 text-xs font-bold rounded-lg text-slate-950 shrink-0 transition">Kopiuj</button>
+      <!-- WYNIK GENEROWANIA -->
+      <div id="resultBox" class="hidden pt-6 border-t border-slate-800 space-y-5">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          
+          <!-- Lewa kolumna: Dane i Akcje -->
+          <div class="lg:col-span-8 flex flex-col justify-between space-y-4">
+            <div class="grid grid-cols-3 gap-3 p-4 rounded-xl bg-[#070b14] border border-slate-800">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Identyfikator</span>
+                <span id="resTagBadge" class="text-sm sm:text-base font-bold font-mono text-white mt-0.5 block"></span>
               </div>
-            </div>
-            <div>
-              <span class="text-xs text-amber-400/90 font-medium block mb-1">Link Admina (dla klienta po wpisaniu PIN-u):</span>
-              <div class="flex gap-2">
-                <input type="text" id="resAdminUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-amber-200 font-mono">
-                <button type="button" onclick="copyField('resAdminUrl', this)" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200 shrink-0 transition">Kopiuj</button>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Status</span>
+                <span id="resStatus" class="text-xs font-bold font-mono text-amber-400 mt-1 block">UNCLAIMED</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Kod PIN</span>
+                <span id="resPin" class="text-lg sm:text-xl font-extrabold font-mono text-sky-400 tracking-widest mt-0.5 block">------</span>
               </div>
             </div>
 
-            <button type="button" id="btnWriteNfc" onclick="writeDirectNfc('resTagUrl', this)"
-              class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              <span>Zapisz bezpośrednio na chipie NFC (telefonem)</span>
-            </button>
+            <div class="space-y-3">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-400 block mb-1">Link Publiczny (do zapisu na chip NFC):</label>
+                <div class="flex gap-2">
+                  <input type="text" id="resTagUrl" readonly class="input-field w-full rounded-lg px-3 py-2 text-xs text-sky-300 font-mono">
+                  <button type="button" onclick="copyField('resTagUrl', this)" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-white shrink-0 transition">Kopiuj</button>
+                </div>
+              </div>
+              <div>
+                <label class="text-[11px] font-semibold text-slate-400 block mb-1">Link Panelu Klienta (Admin URL):</label>
+                <div class="flex gap-2">
+                  <input type="text" id="resAdminUrl" readonly class="input-field w-full rounded-lg px-3 py-2 text-xs text-slate-300 font-mono">
+                  <button type="button" onclick="copyField('resAdminUrl', this)" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-white shrink-0 transition">Kopiuj</button>
+                </div>
+              </div>
+            </div>
 
-            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+              <button type="button" id="btnWriteNfc" onclick="writeDirectNfc('resTagUrl', this)"
+                class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Zapisz NFC</span>
+              </button>
+
               <button type="button" onclick="printCardFromElements('resTagBadge', 'resPin', 'resAdminUrl', this)" 
-                class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Pobierz kartę PDF</span>
+                class="py-2.5 px-3 bg-white hover:bg-slate-200 text-slate-950 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Karta PDF</span>
               </button>
 
               <button type="button" onclick="copyMessageFromElements('resTagBadge', 'resPin', 'resAdminUrl', this)" 
-                class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-                <span>Kopiuj treść SMS / E-mail</span>
+                class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span>Instrukcja SMS</span>
               </button>
             </div>
           </div>
 
-          <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner mx-auto">
-            <div id="resQrCode"></div>
-            <div class="mt-2 flex gap-1">
-              <button type="button" onclick="renderQrMode('public', 'resQrCode', 'btnQrPublic', 'btnQrAdmin')" id="btnQrPublic" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white">Publiczny</button>
-              <button type="button" onclick="renderQrMode('admin', 'resQrCode', 'btnQrPublic', 'btnQrAdmin')" id="btnQrAdmin" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">Admin</button>
+          <!-- Prawa kolumna: Kod QR -->
+          <div class="lg:col-span-4 flex flex-col items-center justify-center p-5 bg-[#070b14] border border-slate-800 rounded-xl">
+            <div class="p-3 bg-white rounded-xl shadow-md">
+              <div id="resQrCode"></div>
+            </div>
+            <div class="mt-3 flex p-1 bg-slate-900 rounded-lg border border-slate-800">
+              <button type="button" onclick="renderQrMode('public', 'resQrCode', 'btnQrPublic', 'btnQrAdmin')" id="btnQrPublic" class="text-[11px] font-bold px-3 py-1 rounded-md bg-sky-500 text-slate-950 transition">Publiczny</button>
+              <button type="button" onclick="renderQrMode('admin', 'resQrCode', 'btnQrPublic', 'btnQrAdmin')" id="btnQrAdmin" class="text-[11px] font-semibold px-3 py-1 rounded-md text-slate-400 hover:text-white transition">Admin</button>
             </div>
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- ZAKŁADKA 2: KARTA / DRUK PO ID -->
-    <div id="view-fetchCard" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <!-- ZAKŁADKA 2: KARTA / PDF PO ID -->
+    <div id="view-fetchCard" class="tab-content hidden glass-panel rounded-2xl p-6 space-y-6">
       <div>
-        <h2 class="text-base font-bold text-white mb-1">Wygeneruj Kartę Aktywacyjną / QR dla Istniejącego Breloka</h2>
-        <p class="text-xs text-slate-400">Podaj ID breloka (np. z odlewu lub od klienta), aby odczytać jego aktualny kod PIN, linki oraz wygenerować plik PDF do druku.</p>
+        <h2 class="text-base font-bold text-white">Pobierz dane i wygeneruj kartę PDF po ID</h2>
+        <p class="text-xs text-slate-400 mt-1">Wpisz identyfikator istniejącego breloka, aby odczytać jego PIN, zapisać link na chipie lub pobrać kartę aktywacyjną.</p>
       </div>
 
-      <div class="flex gap-2">
-        <input type="text" id="fetch_tagId" placeholder="Wpisz ID breloka (np. pet-9x2m4q)..."
-          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+      <div class="flex gap-2.5">
+        <input type="text" id="fetch_tagId" placeholder="Np. pet-9x2m4q..."
+          class="input-field w-full rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 font-mono">
         <button type="button" onclick="handleFetchTagCard()"
-          class="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm rounded-xl shrink-0 transition flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <span>Pobierz dane</span>
+          class="px-6 py-3 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm rounded-xl shrink-0 transition">
+          Szukaj w bazie
         </button>
       </div>
 
-      <div id="fetchResultBox" class="hidden bg-slate-950 border border-sky-500/30 rounded-2xl p-5 space-y-4">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-sky-400"></span> Dane breloka z bazy
-          </span>
-          <span id="fetchTagBadge" class="text-xs font-mono bg-slate-800 text-slate-200 px-3 py-1 rounded-lg font-bold border border-slate-700"></span>
-        </div>
-
-        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
-          <div>
-            <span class="text-[11px] text-slate-400 block font-medium">Status w bazie:</span>
-            <span id="fetchStatus" class="text-xs font-bold text-amber-400 font-mono tracking-wider">UNCLAIMED</span>
-          </div>
-          <div class="text-right">
-            <span class="text-[11px] text-slate-400 block font-medium">PIN aktywacyjny:</span>
-            <span id="fetchPin" class="text-xl font-black text-sky-400 font-mono tracking-widest">------</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-          <div class="space-y-3 md:col-span-2">
-            <div>
-              <span class="text-xs text-slate-300 font-semibold block mb-1">Link Publiczny (NFC / QR):</span>
-              <div class="flex gap-2">
-                <input type="text" id="fetchTagUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-sky-300 font-mono">
-                <button type="button" onclick="copyField('fetchTagUrl', this)" class="px-3.5 py-1.5 bg-sky-500 hover:bg-sky-400 text-xs font-bold rounded-lg text-slate-950 shrink-0 transition">Kopiuj</button>
+      <div id="fetchResultBox" class="hidden pt-6 border-t border-slate-800 space-y-5">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <div class="lg:col-span-8 flex flex-col justify-between space-y-4">
+            <div class="grid grid-cols-3 gap-3 p-4 rounded-xl bg-[#070b14] border border-slate-800">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Identyfikator</span>
+                <span id="fetchTagBadge" class="text-sm sm:text-base font-bold font-mono text-white mt-0.5 block"></span>
               </div>
-            </div>
-            <div>
-              <span class="text-xs text-amber-400/90 font-medium block mb-1">Link Admina:</span>
-              <div class="flex gap-2">
-                <input type="text" id="fetchAdminUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-amber-200 font-mono">
-                <button type="button" onclick="copyField('fetchAdminUrl', this)" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200 shrink-0 transition">Kopiuj</button>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Status</span>
+                <span id="fetchStatus" class="text-xs font-bold font-mono text-amber-400 mt-1 block">UNCLAIMED</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Kod PIN</span>
+                <span id="fetchPin" class="text-lg sm:text-xl font-extrabold font-mono text-sky-400 tracking-widest mt-0.5 block">------</span>
               </div>
             </div>
 
-            <button type="button" onclick="writeDirectNfc('fetchTagUrl', this)"
-              class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              <span>Zapisz ten link na chipie NFC (telefonem)</span>
-            </button>
+            <div class="space-y-3">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-400 block mb-1">Link Publiczny (NFC):</label>
+                <div class="flex gap-2">
+                  <input type="text" id="fetchTagUrl" readonly class="input-field w-full rounded-lg px-3 py-2 text-xs text-sky-300 font-mono">
+                  <button type="button" onclick="copyField('fetchTagUrl', this)" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-white shrink-0 transition">Kopiuj</button>
+                </div>
+              </div>
+              <div>
+                <label class="text-[11px] font-semibold text-slate-400 block mb-1">Link Panelu Klienta:</label>
+                <div class="flex gap-2">
+                  <input type="text" id="fetchAdminUrl" readonly class="input-field w-full rounded-lg px-3 py-2 text-xs text-slate-300 font-mono">
+                  <button type="button" onclick="copyField('fetchAdminUrl', this)" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-white shrink-0 transition">Kopiuj</button>
+                </div>
+              </div>
+            </div>
 
-            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+              <button type="button" onclick="writeDirectNfc('fetchTagUrl', this)"
+                class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Zapisz NFC</span>
+              </button>
+
               <button type="button" onclick="printCardFromElements('fetchTagBadge', 'fetchPin', 'fetchAdminUrl', this)" 
-                class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Pobierz kartę PDF</span>
+                class="py-2.5 px-3 bg-white hover:bg-slate-200 text-slate-950 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Karta PDF</span>
               </button>
 
               <button type="button" onclick="copyMessageFromElements('fetchTagBadge', 'fetchPin', 'fetchAdminUrl', this)" 
-                class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-                <span>Kopiuj treść SMS / E-mail</span>
+                class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span>Instrukcja SMS</span>
               </button>
             </div>
           </div>
 
-          <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner mx-auto">
-            <div id="fetchQrCode"></div>
-            <div class="mt-2 flex gap-1">
-              <button type="button" onclick="renderQrMode('public', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin')" id="btnFetchQrPublic" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white">Publiczny</button>
-              <button type="button" onclick="renderQrMode('admin', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin')" id="btnFetchQrAdmin" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800">Admin</button>
+          <div class="lg:col-span-4 flex flex-col items-center justify-center p-5 bg-[#070b14] border border-slate-800 rounded-xl">
+            <div class="p-3 bg-white rounded-xl shadow-md">
+              <div id="fetchQrCode"></div>
+            </div>
+            <div class="mt-3 flex p-1 bg-slate-900 rounded-lg border border-slate-800">
+              <button type="button" onclick="renderQrMode('public', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin')" id="btnFetchQrPublic" class="text-[11px] font-bold px-3 py-1 rounded-md bg-sky-500 text-slate-950 transition">Publiczny</button>
+              <button type="button" onclick="renderQrMode('admin', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin')" id="btnFetchQrAdmin" class="text-[11px] font-semibold px-3 py-1 rounded-md text-slate-400 hover:text-white transition">Admin</button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ZAKŁADKA 3: PRODUKCJA SERYJNA (CSV) -->
-    <div id="view-batch" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <!-- ZAKŁADKA 3: SERIA CSV -->
+    <div id="view-batch" class="tab-content hidden glass-panel rounded-2xl p-6 space-y-6">
       <div>
-        <h2 class="text-base font-bold text-white mb-1">Generowanie Hurtowe do Pliku CSV</h2>
-        <p class="text-xs text-slate-400">Wygeneruj serię breloków dla partii produkcyjnej. Wszystkie identyfikatory, kody PIN oraz linki zostaną wyeksportowane do arkusza CSV.</p>
+        <h2 class="text-base font-bold text-white">Produkcja Seryjna (Eksport CSV)</h2>
+        <p class="text-xs text-slate-400 mt-1">Wygeneruj paczkę breloków dla partii odlewów i pobierz gotowy arkusz z identyfikatorami, kodami PIN i linkami.</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Wybierz Linię:</label>
-          <select id="batch_line" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 font-mono">
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Linia produktowa:</label>
+          <select id="batch_line" class="input-field w-full rounded-xl px-3.5 py-3 text-sm text-slate-100 font-mono">
             <option value="pet">Pet — zwierzak (pet-xxxxxx)</option>
             <option value="safe">Safe — zguba + ICE (safe-xxxxxx)</option>
             <option value="pro">Pro — wizytówka, hub, pay, link (pro-xxxxxx)</option>
@@ -347,21 +370,21 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Liczba sztuk w serii:</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Liczba sztuk (1–100):</label>
           <input type="number" id="batch_count" value="10" min="1" max="100"
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 font-mono">
+            class="input-field w-full rounded-xl px-3.5 py-3 text-sm text-slate-100 font-mono">
         </div>
       </div>
 
       <button type="button" id="btnRunBatch" onclick="handleBatchGenerate()"
-        class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-        <span>Wygeneruj serię i pobierz plik CSV</span>
+        class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Wygeneruj serię i pobierz CSV</span>
       </button>
 
       <div id="batchProgressBox" class="hidden space-y-2">
-        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
-          <div id="batchProgressBar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+          <div id="batchProgressBar" class="bg-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
         </div>
         <div class="flex justify-between text-xs text-slate-400 font-mono">
           <span id="batchProgressText">Przygotowywanie...</span>
@@ -370,37 +393,33 @@
       </div>
     </div>
 
-    <!-- ZAKŁADKA 4: ZARZĄDZAJ STATUSEM -->
-    <div id="view-status" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <!-- ZAKŁADKA 4: STATUS PIN -->
+    <div id="view-status" class="tab-content hidden glass-panel rounded-2xl p-6 space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1.5">ID Tagu:</label>
         <input type="text" id="status_tagId" placeholder="Wklej tagId (np. pet-9x2m4q)..."
-          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+          class="input-field w-full rounded-xl px-3.5 py-3 text-sm text-slate-100 placeholder-slate-600 font-mono">
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+        <div class="p-5 bg-[#070b14] border border-slate-800 rounded-xl flex flex-col justify-between space-y-4">
           <div>
-            <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Aktywuj natychmiast (ACTIVE)
-            </h3>
-            <p class="text-xs text-slate-400 mt-1">Usuwa wymóg PIN-u. Brelok od razu wyświetla profil publiczny i odblokowuje panel.</p>
+            <h3 class="text-sm font-bold text-emerald-400">Aktywuj bez PIN-u (ACTIVE)</h3>
+            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Zdejmuje blokadę startową. Brelok od razu wyświetla profil i udostępnia edycję.</p>
           </div>
           <button type="button" onclick="handleSetStatus('active')"
-            class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition">
-            Ustaw status ACTIVE
+            class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition">
+            Ustaw ACTIVE
           </button>
         </div>
 
-        <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+        <div class="p-5 bg-[#070b14] border border-slate-800 rounded-xl flex flex-col justify-between space-y-4">
           <div>
-            <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-amber-400"></span> Resetuj do parowania (UNCLAIMED)
-            </h3>
-            <p class="text-xs text-slate-400 mt-1">Blokuje profil. Brelok wymaga wpisania PIN-u przy skanowaniu. Generuje nowy PIN, jeśli brakowało.</p>
+            <h3 class="text-sm font-bold text-amber-400">Wymagaj PIN-u (UNCLAIMED)</h3>
+            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Przywraca stan fabryczny. Klient musi wpisać 6-cyfrowy kod przy pierwszym skanie.</p>
           </div>
           <button type="button" onclick="handleSetStatus('unclaimed')"
-            class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 active:scale-[0.99] text-white font-bold text-xs rounded-lg transition">
+            class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-lg transition">
             Zresetuj do UNCLAIMED
           </button>
         </div>
@@ -408,129 +427,120 @@
     </div>
 
     <!-- ZAKŁADKA 5: ZMIEŃ LINIĘ -->
-    <div id="view-changeLine" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <div id="view-changeLine" class="tab-content hidden glass-panel rounded-2xl p-6 space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1.5">ID Modyfikowanego Tagu:</label>
         <input type="text" id="update_tagId" placeholder="Wklej tagId..."
-          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+          class="input-field w-full rounded-xl px-3.5 py-3 text-sm text-slate-100 placeholder-slate-600 font-mono">
       </div>
 
       <div>
-        <label class="block text-sm font-bold text-slate-200 mb-3">Wybierz nową linię:</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Wybierz nową linię:</label>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <label class="cursor-pointer">
             <input type="radio" name="update_line" value="pet" class="peer sr-only" checked>
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
-              <span class="block text-xl mb-1">🐾</span>
-              <span class="text-xs font-bold block">Pet</span>
+            <div class="p-3.5 text-center rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 transition">
+              <span class="block text-lg mb-1">🐾</span>
+              <span class="text-xs font-bold block text-white">Pet</span>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="update_line" value="safe" class="peer sr-only">
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
-              <span class="block text-xl mb-1">🛡️</span>
-              <span class="text-xs font-bold block">Safe</span>
+            <div class="p-3.5 text-center rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 transition">
+              <span class="block text-lg mb-1">🛡️</span>
+              <span class="text-xs font-bold block text-white">Safe</span>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="update_line" value="pro" class="peer sr-only">
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
-              <span class="block text-xl mb-1">💼</span>
-              <span class="text-xs font-bold block">Pro</span>
+            <div class="p-3.5 text-center rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 transition">
+              <span class="block text-lg mb-1">💼</span>
+              <span class="text-xs font-bold block text-white">Pro</span>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="update_line" value="home" class="peer sr-only">
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
-              <span class="block text-xl mb-1">📶</span>
-              <span class="text-xs font-bold block">Home</span>
+            <div class="p-3.5 text-center rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 transition">
+              <span class="block text-lg mb-1">📶</span>
+              <span class="text-xs font-bold block text-white">Home</span>
             </div>
           </label>
           <label class="cursor-pointer col-span-2 sm:col-span-1">
             <input type="radio" name="update_line" value="all" class="peer sr-only">
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
-              <span class="block text-xl mb-1">⭐</span>
-              <span class="text-xs font-bold block">All</span>
+            <div class="p-3.5 text-center rounded-xl border border-slate-800 bg-[#070b14] peer-checked:border-sky-400 peer-checked:bg-sky-950/30 transition">
+              <span class="block text-lg mb-1">⭐</span>
+              <span class="text-xs font-bold block text-white">All</span>
             </div>
           </label>
         </div>
       </div>
 
       <button type="button" onclick="handleUpdateLine()"
-        class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-sky-400 font-bold rounded-xl border border-sky-500/20 shadow-lg transition flex items-center justify-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        class="w-full py-3.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm rounded-xl transition">
         Zaktualizuj linię tagu
       </button>
     </div>
 
     <!-- ZAKŁADKA 6: WŁASNE TRYBY -->
-    <div id="view-customModes" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <div id="view-customModes" class="tab-content hidden glass-panel rounded-2xl p-6 space-y-6">
       <div>
         <label class="block text-xs font-semibold text-slate-300 mb-1.5">ID Modyfikowanego Tagu:</label>
         <input type="text" id="modes_tagId" placeholder="Wklej tagId..."
-          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+          class="input-field w-full rounded-xl px-3.5 py-3 text-sm text-slate-100 placeholder-slate-600 font-mono">
       </div>
 
       <div>
-        <label class="block text-sm font-bold text-slate-200 mb-3">Zaznacz dozwolone tryby dla klienta:</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Zaznacz dozwolone funkcje:</label>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-            <input type="checkbox" name="custom_mode" value="pet" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
-            <span class="text-sm font-medium">🐾 Zwierzak</span>
+          <label class="flex items-center gap-3 p-3.5 bg-[#070b14] border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="pet" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+            <span class="text-xs font-semibold text-slate-200">🐾 Zwierzak</span>
           </label>
-          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-            <input type="checkbox" name="custom_mode" value="lost" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
-            <span class="text-sm font-medium">🔑 Zguba</span>
+          <label class="flex items-center gap-3 p-3.5 bg-[#070b14] border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="lost" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+            <span class="text-xs font-semibold text-slate-200">🔑 Zguba</span>
           </label>
-          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-            <input type="checkbox" name="custom_mode" value="ice" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
-            <span class="text-sm font-medium">🚑 Karta ICE</span>
+          <label class="flex items-center gap-3 p-3.5 bg-[#070b14] border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="ice" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+            <span class="text-xs font-semibold text-slate-200">🚑 Karta ICE</span>
           </label>
-          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-            <input type="checkbox" name="custom_mode" value="biz" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
-            <span class="text-sm font-medium">💼 Wizytówka</span>
+          <label class="flex items-center gap-3 p-3.5 bg-[#070b14] border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="biz" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+            <span class="text-xs font-semibold text-slate-200">💼 Wizytówka</span>
           </label>
-          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-            <input type="checkbox" name="custom_mode" value="hub" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
-            <span class="text-sm font-medium">🌐 Social Hub</span>
+          <label class="flex items-center gap-3 p-3.5 bg-[#070b14] border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="hub" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+            <span class="text-xs font-semibold text-slate-200">🌐 Social Hub</span>
           </label>
-          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-            <input type="checkbox" name="custom_mode" value="pay" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
-            <span class="text-sm font-medium">💳 Płatność</span>
+          <label class="flex items-center gap-3 p-3.5 bg-[#070b14] border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="pay" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+            <span class="text-xs font-semibold text-slate-200">💳 Płatność</span>
           </label>
-          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-            <input type="checkbox" name="custom_mode" value="wifi" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
-            <span class="text-sm font-medium">📶 Wi-Fi</span>
+          <label class="flex items-center gap-3 p-3.5 bg-[#070b14] border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="wifi" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+            <span class="text-xs font-semibold text-slate-200">📶 Wi-Fi</span>
           </label>
-          <label class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
-            <input type="checkbox" name="custom_mode" value="link" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700 focus:ring-sky-500">
-            <span class="text-sm font-medium">🔗 Link</span>
+          <label class="flex items-center gap-3 p-3.5 bg-[#070b14] border border-slate-800 rounded-xl cursor-pointer hover:border-slate-700 transition">
+            <input type="checkbox" name="custom_mode" value="link" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+            <span class="text-xs font-semibold text-slate-200">🔗 Link</span>
           </label>
         </div>
       </div>
 
       <button type="button" onclick="handleUpdateModes()"
-        class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-sky-400 font-bold rounded-xl border border-sky-500/20 shadow-lg transition flex items-center justify-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-        Zapisz zestaw funkcji
+        class="w-full py-3.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm rounded-xl transition">
+        Zapisz wybrany zestaw funkcji
       </button>
     </div>
 
-    <!-- TERMINAL LOGÓW HTTP -->
-    <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-      <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="flex gap-1.5">
-            <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
-            <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
-            <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-          </div>
-          <span class="text-xs font-mono font-semibold text-slate-400 ml-2">Terminal Żądań HTTP</span>
-        </div>
-        <button type="button" onclick="clearConsole()" class="text-xs text-slate-500 hover:text-slate-300 font-mono transition">Wyczyść</button>
+    <!-- KONSOLA API -->
+    <section class="glass-panel rounded-2xl overflow-hidden">
+      <div class="bg-[#070b14] px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Dziennik żądań API</span>
+        <button type="button" onclick="clearConsole()" class="text-[11px] text-slate-500 hover:text-slate-300 font-mono transition">Wyczyść</button>
       </div>
-      <div id="consoleLog" class="p-4 bg-[#090d16] font-mono text-xs text-slate-300 overflow-x-auto max-h-72 space-y-3">
-        <div class="text-slate-500">// Gotowy do pracy. Odpowiedzi serwera pojawią się tutaj...</div>
+      <div id="consoleLog" class="p-4 bg-[#05080f] font-mono text-xs text-slate-300 overflow-x-auto max-h-56 space-y-2.5">
+        <div class="text-slate-600">// Oczekiwanie na polecenia...</div>
       </div>
     </section>
 
@@ -549,7 +559,6 @@
     function loadSavedConfig() {
       const savedUrl = localStorage.getItem('tapcraft_api_url');
       const savedSecret = localStorage.getItem('tapcraft_api_secret');
-      // Automatyczna aktualizacja jeśli w pamięci został stary tymczasowy adres trycloudflare
       if (savedUrl && !savedUrl.includes('trycloudflare.com')) {
         apiUrlInput.value = savedUrl;
       } else {
@@ -575,8 +584,7 @@
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-sky-400', 'text-sky-400', 'font-bold');
-        btn.classList.add('border-transparent', 'text-slate-400', 'font-semibold');
+        btn.className = 'tab-btn flex-1 min-w-[130px] px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 transition flex items-center justify-center gap-2';
       });
 
       const targetView = document.getElementById('view-' + tabId);
@@ -584,8 +592,7 @@
 
       if (targetView) targetView.classList.remove('hidden');
       if (targetBtn) {
-        targetBtn.classList.add('border-sky-400', 'text-sky-400', 'font-bold');
-        targetBtn.classList.remove('border-transparent', 'text-slate-400', 'font-semibold');
+        targetBtn.className = 'tab-btn flex-1 min-w-[130px] px-3.5 py-2.5 rounded-xl text-xs font-bold bg-sky-500 text-slate-950 shadow-sm transition flex items-center justify-center gap-2';
       }
     }
 
@@ -596,23 +603,23 @@
       const statusColor = status >= 200 && status < 300 ? 'text-emerald-400' : 'text-rose-400';
 
       const entry = document.createElement('div');
-      entry.className = 'border-l-2 border-slate-700 pl-3 py-1 space-y-1';
+      entry.className = 'border-l-2 border-slate-800 pl-3 py-1 space-y-1';
       entry.innerHTML = `
         <div class="flex items-center gap-2">
-          <span class="text-slate-500">[${time}]</span>
+          <span class="text-slate-600">[${time}]</span>
           <span class="font-bold text-sky-400">${method}</span>
-          <span class="text-slate-300 break-all">${url}</span>
+          <span class="text-slate-400 break-all">${url}</span>
           <span class="font-bold ${statusColor} ml-auto">HTTP ${status}</span>
         </div>
-        ${payload ? `<div class="text-slate-400"><span class="text-slate-500">Payload:</span> ${escapeHtml(JSON.stringify(payload))}</div>` : ''}
-        <div class="${statusColor}"><span class="text-slate-500">Response:</span> ${escapeHtml(typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData)}</div>
+        ${payload ? `<div class="text-slate-500">Payload: ${escapeHtml(JSON.stringify(payload))}</div>` : ''}
+        <div class="${statusColor}">${escapeHtml(typeof responseData === 'object' ? JSON.stringify(responseData) : responseData)}</div>
       `;
       consoleLog.appendChild(entry);
       consoleLog.scrollTop = consoleLog.scrollHeight;
     }
 
     function clearConsole() {
-      consoleLog.innerHTML = '<div class="text-slate-500">// Konsola wyczyszczona.</div>';
+      consoleLog.innerHTML = '<div class="text-slate-600">// Dziennik wyczyszczony.</div>';
     }
 
     function escapeHtml(str) {
@@ -624,7 +631,7 @@
       const secret = apiSecretInput.value.trim();
 
       if (!secret) {
-        alert('Podaj klucz X-Api-Secret w sekcji połączenia!');
+        alert('Wklej klucz X-Api-Secret w górnej sekcji!');
         return null;
       }
 
@@ -641,11 +648,7 @@
 
         let data;
         const text = await res.text();
-        try {
-          data = JSON.parse(text);
-        } catch {
-          data = text;
-        }
+        try { data = JSON.parse(text); } catch { data = text; }
 
         logConsole('POST', fullUrl, body, res.status, data);
         return { ok: res.ok, status: res.status, data };
@@ -660,8 +663,8 @@
       container.innerHTML = '';
       new QRCode(container, {
         text: url,
-        width: 136,
-        height: 136,
+        width: 140,
+        height: 140,
         correctLevel: QRCode.CorrectLevel.M
       });
     }
@@ -673,14 +676,17 @@
       const pubUrl = isFetch ? fetchPublicUrl : currentPublicUrl;
       const admUrl = isFetch ? fetchAdminUrl : currentAdminUrl;
 
+      const activeCls = 'text-[11px] font-bold px-3 py-1 rounded-md bg-sky-500 text-slate-950 transition';
+      const inactiveCls = 'text-[11px] font-semibold px-3 py-1 rounded-md text-slate-400 hover:text-white transition';
+
       if (mode === 'public') {
         generateQrToContainer(containerId, pubUrl);
-        btnPublic.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white';
-        btnAdmin.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800';
+        btnPublic.className = activeCls;
+        btnAdmin.className = inactiveCls;
       } else {
         generateQrToContainer(containerId, admUrl);
-        btnAdmin.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 text-white';
-        btnPublic.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800';
+        btnAdmin.className = activeCls;
+        btnPublic.className = inactiveCls;
       }
     }
 
@@ -709,10 +715,7 @@
 
     async function handleFetchTagCard() {
       const tagId = document.getElementById('fetch_tagId').value.trim();
-      if (!tagId) {
-        alert('Podaj ID breloka!');
-        return;
-      }
+      if (!tagId) { alert('Podaj ID breloka!'); return; }
 
       const res = await callApi('/api/get-tag', { tagId });
       if (!res) return;
@@ -724,37 +727,31 @@
         document.getElementById('fetchResultBox').classList.remove('hidden');
         document.getElementById('fetchTagBadge').textContent = '#' + res.data.tagId;
         document.getElementById('fetchStatus').textContent = (res.data.status || 'active').toUpperCase();
-        document.getElementById('fetchPin').textContent = res.data.claimPin || 'AKTYWNY (BEZ PIN)';
+        document.getElementById('fetchPin').textContent = res.data.claimPin || 'AKTYWNY';
         document.getElementById('fetchTagUrl').value = res.data.tagUrl;
         document.getElementById('fetchAdminUrl').value = res.data.adminUrl;
 
         renderQrMode('public', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin');
       } else {
         const errorMsg = res.data?.error || (typeof res.data === 'string' ? res.data : 'Brak danych');
-        alert('Nie udało się pobrać tagu: ' + errorMsg);
+        alert('Nie znaleziono breloka: ' + errorMsg);
       }
     }
 
     async function writeDirectNfc(inputElementId, btnElement) {
       const tagUrl = document.getElementById(inputElementId).value.trim();
-      const originalText = btnElement.innerHTML;
+      const originalHtml = btnElement.innerHTML;
 
       if (!('NDEFReader' in window)) {
-        alert('Twoja przeglądarka nie obsługuje Web NFC. Użyj Chrome na Androidzie lub wgraj link ręcznie za pomocą aplikacji NFC Tools.');
+        alert('Przeglądarka nie obsługuje Web NFC (wymagany Chrome na Androidzie).');
         return;
       }
 
       try {
         const ndef = new NDEFReader();
-        await ndef.write({
-          records: [{ recordType: 'url', data: tagUrl }]
-        });
-        btnElement.innerHTML = '<span>✓ ZAPISANO NA CHIP!</span>';
-        btnElement.classList.replace('bg-emerald-600', 'bg-sky-500');
-        setTimeout(() => {
-          btnElement.innerHTML = originalText;
-          btnElement.classList.replace('bg-sky-500', 'bg-emerald-600');
-        }, 2500);
+        await ndef.write({ records: [{ recordType: 'url', data: tagUrl }] });
+        btnElement.innerHTML = '<span>✓ Zapisano!</span>';
+        setTimeout(() => { btnElement.innerHTML = originalHtml; }, 2200);
       } catch (err) {
         alert('Błąd zapisu NFC: ' + err.message);
       }
@@ -764,7 +761,7 @@
       const tagId = document.getElementById(badgeId).textContent.replace('#', '').trim();
       const pin = document.getElementById(pinId).textContent.trim();
       const adminUrl = document.getElementById(adminUrlId).value.trim();
-      if (!adminUrl) { alert('Brak linku do panelu administracyjnego dla tego breloka.'); return; }
+      if (!adminUrl) { alert('Brak linku do panelu.'); return; }
       const hasPin = /^\d{4,8}$/.test(pin);
 
       const msg =
@@ -779,9 +776,9 @@ ${pin}
 Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
 
       navigator.clipboard.writeText(msg).then(() => {
-        const oldText = btnElement.innerHTML;
-        btnElement.innerHTML = '<span>✓ Skopiowano treść!</span>';
-        setTimeout(() => { btnElement.innerHTML = oldText; }, 2000);
+        const oldHtml = btnElement.innerHTML;
+        btnElement.innerHTML = '<span>✓ Skopiowano!</span>';
+        setTimeout(() => { btnElement.innerHTML = oldHtml; }, 2000);
       });
     }
 
@@ -796,150 +793,177 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
       return dataUrl;
     }
 
-    // Ładuje oryginalny plik SVG z folderu svg/ jako bezpieczny Data URL dla html2canvas
-    async function loadLogoAsDataUrl(relPath) {
+    // Wczytuje oryginalne SVG z dysku; przy blokadzie file:// generuje wektor marki w pamięci
+    async function getBrandLogoDataUrl() {
       try {
-        const res = await fetch(relPath);
-        if (!res.ok) return null;
-        const svgText = await res.text();
-        return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgText)));
-      } catch (e) {
-        return null;
-      }
+        const res = await fetch('svg/tapcraft-logo-poziome-na-jasnym.svg');
+        if (res.ok) {
+          const svgText = await res.text();
+          return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgText)));
+        }
+      } catch (e) {}
+
+      const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 84" width="380" height="84">
+        <defs>
+          <linearGradient id="dGrad" x1="48" y1="8" x2="48" y2="76" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#38BDF8"/>
+            <stop offset="100%" stop-color="#2563EB"/>
+          </linearGradient>
+        </defs>
+        <path d="M26 26C21 35 21 49 26 58" stroke="#2563EB" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M17 19C9 32 9 52 17 65" stroke="#60A5FA" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M70 26C75 35 75 49 70 58" stroke="#2563EB" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M79 19C87 32 87 52 79 65" stroke="#60A5FA" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M48 10C48 10 29 35 29 52C29 63 37.5 72 48 72C58.5 72 67 63 67 52C67 35 48 10 48 10Z" fill="url(#dGrad)"/>
+        <path d="M38 39C36 44 35.5 50 37 55" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+        <text x="104" y="55" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="40" letter-spacing="-1" fill="#0F172A">Tap<tspan fill="#2563EB">Craft</tspan></text>
+      </svg>`;
+      return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(fallbackSvg)));
     }
 
     const CARD_BRAND = 'TapCraft';
-    const CARD_W = 560, CARD_H = 794;   // proporcje A5 (148 x 210 mm)
+    const CARD_W = 560, CARD_H = 794; // Proporcje A5 (148 x 210 mm)
 
+    // Minimalistyczny, modernistyczny szablon karty PDF (Swiss Grid)
     function buildCardMarkup(d) {
       const hasPin = /^\d{4,8}$/.test(d.pinRaw);
-      const pinBand = hasPin
-        ? `<div class="tc-band-txt">
-             <b>Ekran z prośbą o PIN?</b>
-             <span>Jeśli po zbliżeniu telefonu pojawi się ekran aktywacji, wpisz ten kod:</span>
-           </div>
-           <div class="tc-pin">${d.pinRaw.split('').map(c => '<i>' + c + '</i>').join('')}</div>`
-        : `<div class="tc-band-txt tc-band-wide">
-             <b>PIN nie jest potrzebny.</b>
-             <span>Ten brelok jest już aktywny — wystarczy otworzyć panel z kroku 1.</span>
-           </div>`;
+      const pinDigits = hasPin
+        ? d.pinRaw.split('').map(c => `<span class="tc-digit">${c}</span>`).join('')
+        : '';
 
-      const brandHtml = d.logoDataUrl
-        ? `<img src="${d.logoDataUrl}" alt="${CARD_BRAND}" style="height:36px;width:auto;display:block;">`
-        : `<span style="font-size:26px;font-weight:800;letter-spacing:-0.4px;color:#0f172a;">Tap<span style="color:#2563eb;">Craft</span></span>`;
+      const pinSection = hasPin
+        ? `<div class="a tc-pin-wrap">
+             <div class="tc-pin-meta">
+               <span class="tc-kicker">KOD AKTYWACYJNY</span>
+               <p class="tc-pin-desc">Wpisz ten 6-cyfrowy PIN, jeśli po zbliżeniu telefonu pojawi się ekran aktywacji.</p>
+             </div>
+             <div class="tc-pin-code">${pinDigits}</div>
+           </div>`
+        : `<div class="a tc-pin-wrap">
+             <div class="tc-pin-meta" style="width:100%">
+               <span class="tc-kicker">STATUS: AKTYWNY</span>
+               <p class="tc-pin-desc">Ten brelok nie wymaga kodu PIN. Zeskanuj kod QR powyżej, aby przejść do konfiguracji.</p>
+             </div>
+           </div>`;
 
       return `
 <style>
   .tc, .tc * { box-sizing: border-box; margin: 0; padding: 0; }
   .tc { position: relative; width: ${CARD_W}px; height: ${CARD_H}px; overflow: hidden; background: #ffffff; color: #0f172a;
-        font-family: 'Manrope', 'Segoe UI', Arial, sans-serif; }
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
   .tc .a { position: absolute; }
 
-  .tc-brand { left: 44px; top: 36px; }
-  .tc-id { right: 44px; top: 43px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; font-weight: 700;
-           letter-spacing: 0.4px; color: #475569; background: #f1f5f9; padding: 5px 10px; border-radius: 6px; line-height: 1; }
+  /* Nagłówek */
+  .tc-logo { left: 48px; top: 44px; height: 32px; }
+  .tc-logo img { height: 32px; width: auto; display: block; }
+  .tc-tag { right: 48px; top: 49px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+            color: #475569; letter-spacing: 0.5px; }
+  .tc-top-line { left: 48px; top: 96px; width: 464px; height: 1px; background: #e2e8f0; }
 
-  .tc-title { left: 44px; top: 100px; width: 472px; font-size: 31px; font-weight: 800; letter-spacing: -0.6px; line-height: 36px; color: #0f172a; }
-  .tc-lead { left: 44px; top: 144px; width: 472px; font-size: 14px; font-weight: 500; line-height: 20px; color: #475569; }
+  /* Tytuł główny */
+  .tc-h1 { left: 48px; top: 124px; width: 464px; font-size: 32px; font-weight: 800; letter-spacing: -0.9px; line-height: 38px; color: #0f172a; }
+  .tc-sub { left: 48px; top: 170px; width: 464px; font-size: 14px; font-weight: 400; line-height: 21px; color: #64748b; }
 
-  .tc-panel { left: 44px; top: 192px; width: 472px; height: 244px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 20px; }
-  .tc-qr { left: 26px; top: 28px; width: 184px; height: 184px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; }
-  .tc-qr img { position: absolute; left: 13px; top: 13px; width: 156px; height: 156px; display: block; }
-  .tc-s1 { left: 234px; top: 28px; width: 212px; }
+  /* Moduł główny: QR + Krok 01 */
+  .tc-hero { left: 48px; top: 218px; width: 464px; height: 216px; border: 1.5px solid #0f172a; border-radius: 16px; }
+  .tc-qr-box { left: 20px; top: 20px; width: 174px; height: 174px; background: #ffffff; }
+  .tc-qr-box img { width: 174px; height: 174px; display: block; }
+  .tc-step1 { left: 218px; top: 24px; width: 222px; }
 
-  .tc-n { display: block; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; line-height: 14px; color: #0284c7; margin-bottom: 5px; }
-  .tc-h { display: block; font-size: 16.5px; font-weight: 800; letter-spacing: -0.2px; line-height: 21px; color: #0f172a; margin-bottom: 6px; }
-  .tc-p { display: block; font-size: 12px; font-weight: 500; line-height: 17.5px; color: #475569; }
-  .tc-or { display: block; margin-top: 12px; font-size: 10.5px; font-weight: 700; line-height: 14px; color: #0f172a; }
-  .tc-link { display: block; margin-top: 4px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 8.8px; font-weight: 500; line-height: 12px; color: #0369a1; word-break: break-all; text-decoration: underline; }
+  .tc-kicker { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: #0284c7; margin-bottom: 6px; }
+  .tc-step-title { display: block; font-size: 16px; font-weight: 800; letter-spacing: -0.3px; color: #0f172a; margin-bottom: 6px; }
+  .tc-step-txt { display: block; font-size: 12px; font-weight: 400; line-height: 18px; color: #475569; }
+  .tc-url-lbl { display: block; margin-top: 14px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #94a3b8; }
+  .tc-link { display: block; margin-top: 3px; font-family: 'JetBrains Mono', monospace; font-size: 8.5px; line-height: 12px; color: #0f172a; word-break: break-all; text-decoration: underline; }
 
-  .tc-s2 { left: 44px; top: 462px; width: 222px; }
-  .tc-s3 { left: 294px; top: 462px; width: 222px; }
+  /* Siatka kroków 02 i 03 */
+  .tc-col2 { left: 48px; top: 464px; width: 216px; }
+  .tc-col3 { left: 296px; top: 464px; width: 216px; }
 
-  .tc-band { left: 44px; top: 586px; width: 472px; height: 92px; background: #0f172a; border-radius: 18px; }
-  .tc-band-txt { position: absolute; left: 22px; top: 0; width: 234px; height: 92px; display: flex; flex-direction: column; justify-content: center; }
-  .tc-band-txt b { display: block; font-size: 13.5px; font-weight: 800; line-height: 18px; color: #ffffff; margin-bottom: 3px; }
-  .tc-band-txt span { display: block; font-size: 10.8px; font-weight: 500; line-height: 14.5px; color: #cbd5e1; }
-  .tc-band-wide { width: 428px; }
-  .tc-pin { position: absolute; right: 20px; top: 0; height: 92px; width: 202px; text-align: right; font-size: 0; line-height: 0; }
-  .tc-pin i { display: inline-block; font-style: normal; width: 28px; margin-left: 4px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 28px; font-weight: 700; line-height: 92px; text-align: center; color: #38bdf8; }
+  /* Sekcja PIN */
+  .tc-pin-wrap { left: 48px; top: 582px; width: 464px; height: 88px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 14px; }
+  .tc-pin-meta { position: absolute; left: 22px; top: 18px; width: 215px; }
+  .tc-pin-desc { font-size: 11px; line-height: 15.5px; color: #475569; margin-top: 2px; }
+  .tc-pin-code { position: absolute; right: 20px; top: 22px; display: flex; gap: 5px; }
+  .tc-digit { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 44px; background: #ffffff; border: 1.5px solid #0f172a; border-radius: 8px;
+              font-family: 'JetBrains Mono', monospace; font-size: 21px; font-weight: 700; color: #0f172a; }
 
-  .tc-rule { left: 44px; top: 704px; width: 472px; height: 1px; background: #e2e8f0; }
-  .tc-warn { left: 44px; top: 716px; width: 472px; font-size: 10.8px; font-weight: 500; line-height: 15.5px; color: #64748b; }
-  .tc-warn b { font-weight: 700; color: #334155; }
-  .tc-foot { left: 44px; top: 762px; width: 472px; font-size: 10px; font-weight: 600; letter-spacing: 0.3px; line-height: 12px; color: #94a3b8; display: flex; justify-content: space-between; }
+  /* Stopka */
+  .tc-bot-line { left: 48px; top: 698px; width: 464px; height: 1px; background: #e2e8f0; }
+  .tc-note { left: 48px; top: 712px; width: 464px; font-size: 10.5px; line-height: 15.5px; color: #64748b; }
+  .tc-note strong { color: #0f172a; font-weight: 700; }
+  .tc-footer { left: 48px; top: 758px; width: 464px; display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: #94a3b8; }
 </style>
 <div class="tc">
-  <div class="a tc-brand">${brandHtml}</div>
-  <div class="a tc-id">ID: #${d.tagId}</div>
+  <div class="a tc-logo"><img src="${d.logoDataUrl}" alt="${CARD_BRAND}"></div>
+  <div class="a tc-tag">ID: #${d.tagId}</div>
+  <div class="a tc-top-line"></div>
 
-  <div class="a tc-title">Aktywacja Twojego breloka</div>
-  <div class="a tc-lead">To Twoja karta dostępu. Trzy proste kroki i brelok jest gotowy.</div>
+  <div class="a tc-h1">Konfiguracja breloka</div>
+  <div class="a tc-sub">Zachowaj tę kartę — zawiera Twój prywatny klucz dostępu do edycji profilu.</div>
 
-  <div class="a tc-panel">
-    <div class="a tc-qr"><img src="${d.qr}" alt="Kod QR"></div>
-    <div class="a tc-s1">
-      <span class="tc-n">KROK 01</span>
-      <span class="tc-h">Zeskanuj kod QR</span>
-      <span class="tc-p">Użyj aparatu w telefonie. Otworzy się panel, w którym ustawisz swój brelok.</span>
-      <span class="tc-or">Lub wpisz adres ręcznie:</span>
+  <div class="a tc-hero">
+    <div class="a tc-qr-box"><img src="${d.qr}" alt="QR"></div>
+    <div class="a tc-step1">
+      <span class="tc-kicker">01 / SKANOWANIE</span>
+      <span class="tc-step-title">Otwórz panel breloka</span>
+      <span class="tc-step-txt">Zeskanuj kod QR aparatem w telefonie, aby przejść do ustawień.</span>
+      <span class="tc-url-lbl">Adres bezpośredni:</span>
       <span class="tc-link">${d.adminUrl}</span>
     </div>
   </div>
 
-  <div class="a tc-s2">
-    <span class="tc-n">KROK 02</span>
-    <span class="tc-h">Wybierz funkcję i zapisz</span>
-    <span class="tc-p">Wybierz tryb (np. wizytówka, zwierzak, Wi-Fi), uzupełnij dane i kliknij „Zapisz zmiany”.</span>
-  </div>
-  <div class="a tc-s3">
-    <span class="tc-n">KROK 03</span>
-    <span class="tc-h">Gotowe</span>
-    <span class="tc-p">Zbliż telefon do breloka — wyświetli się Twój profil. Dane zmienisz w każdej chwili tym samym linkiem.</span>
+  <div class="a tc-col2">
+    <span class="tc-kicker">02 / PERSONALIZACJA</span>
+    <span class="tc-step-title">Wybierz funkcję</span>
+    <span class="tc-step-txt">Ustaw wizytówkę, identyfikator zwierzaka, kartę ICE lub Wi-Fi i zapisz zmiany.</span>
   </div>
 
-  <div class="a tc-band">${pinBand}</div>
+  <div class="a tc-col3">
+    <span class="tc-kicker">03 / GOTOWE</span>
+    <span class="tc-step-title">Zbliż telefon</span>
+    <span class="tc-step-txt">Brelok działa natychmiast. W każdej chwili możesz zmienić jego tryb tym samym linkiem.</span>
+  </div>
 
-  <div class="a tc-rule"></div>
-  <div class="a tc-warn"><b>Zachowaj tę kartę lub zapisz link w telefonie</b> — to jedyny sposób, by wrócić do panelu. Link i kod QR dają dostęp do edycji breloka, więc nie udostępniaj ich innym osobom.</div>
-  <div class="a tc-foot"><span>${CARD_BRAND} · Inteligentne breloki NFC</span><span>tapcraft.cytr.us</span></div>
+  ${pinSection}
+
+  <div class="a tc-bot-line"></div>
+  <div class="a tc-note"><strong>Bezpieczeństwo:</strong> Kod QR oraz adres powyżej dają pełny dostęp do edycji Twojego breloka. Nie publikuj ich w sieci i nie udostępniaj osobom trzecim.</div>
+  <div class="a tc-footer">
+    <span>TAPCRAFT NFC SYSTEM</span>
+    <span>tapcraft.cytr.us</span>
+  </div>
 </div>`;
     }
 
     async function printCardFromElements(badgeId, pinId, adminUrlId, btnElement) {
       if (!window.html2canvas || !window.jspdf) {
-        alert('Nie załadowały się biblioteki do generowania PDF. Sprawdź połączenie z internetem i odśwież stronę.');
+        alert('Brak bibliotek PDF. Sprawdź połączenie z internetem.');
         return;
       }
       const oldHtml = btnElement ? btnElement.innerHTML : '';
-      if (btnElement) { btnElement.disabled = true; btnElement.innerHTML = '<span>Generuję PDF...</span>'; }
+      if (btnElement) { btnElement.disabled = true; btnElement.innerHTML = '<span>Generuję...</span>'; }
 
       try {
         const tagIdRaw = document.getElementById(badgeId).textContent.replace('#', '').trim();
         const pinRaw = document.getElementById(pinId).textContent.trim();
         const adminUrlRaw = document.getElementById(adminUrlId).value.trim();
-        if (!adminUrlRaw) { alert('Brak linku do panelu administracyjnego dla tego breloka.'); return; }
+        if (!adminUrlRaw) { alert('Brak linku panelu.'); return; }
 
-        const logoDataUrl = await loadLogoAsDataUrl('svg/tapcraft-logo-poziome-na-jasnym.svg');
+        const logoDataUrl = await getBrandLogoDataUrl();
 
         const html = buildCardMarkup({
           tagId: escapeHtml(tagIdRaw),
           pin: escapeHtml(pinRaw),
           pinRaw: pinRaw,
-          qr: makeHiResQr(adminUrlRaw, 624),
+          qr: makeHiResQr(adminUrlRaw, 680),
           adminUrl: escapeHtml(adminUrlRaw),
           logoDataUrl
         });
 
         try {
-          await Promise.all([
-            document.fonts.load('800 31px Manrope'),
-            document.fonts.load('500 12px Manrope'),
-            document.fonts.load('700 12px "JetBrains Mono"'),
-            document.fonts.load('500 9px "JetBrains Mono"')
-          ]);
           await document.fonts.ready;
-        } catch (e) { }
+        } catch (e) {}
 
         const stage = document.createElement('div');
         stage.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + CARD_W + 'px;height:' + CARD_H + 'px;';
@@ -956,7 +980,7 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
           return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
         };
         const linkRect = rectOf('.tc-link');
-        const qrRect = rectOf('.tc-qr');
+        const qrRect = rectOf('.tc-qr-box');
 
         const canvas = await html2canvas(card, {
           scale: 4,
@@ -964,28 +988,24 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
           useCORS: true,
           logging: false,
           width: CARD_W,
-          height: CARD_H,
-          windowWidth: CARD_W,
-          windowHeight: CARD_H,
-          scrollX: 0,
-          scrollY: 0
+          height: CARD_H
         });
         document.body.removeChild(stage);
 
-        const PAGE_W = 148, PAGE_H = 210;
+        const PAGE_W = 148, PAGE_H = 210; // Format A5
         const k = PAGE_W / CARD_W;
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ unit: 'mm', format: [PAGE_W, PAGE_H], orientation: 'portrait', compress: true });
-        pdf.setProperties({ title: 'Karta aktywacyjna ' + CARD_BRAND + ' #' + tagIdRaw });
+        pdf.setProperties({ title: 'TapCraft #' + tagIdRaw });
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, PAGE_W, PAGE_H, undefined, 'FAST');
 
         [linkRect, qrRect].forEach(r => {
           if (r) pdf.link(r.x * k, r.y * k, r.w * k, r.h * k, { url: adminUrlRaw });
         });
 
-        pdf.save(CARD_BRAND + '-' + tagIdRaw.replace(/[^a-z0-9_-]/gi, '_') + '.pdf');
+        pdf.save('TapCraft-' + tagIdRaw.replace(/[^a-z0-9_-]/gi, '_') + '.pdf');
       } catch (err) {
-        alert('Nie udało się wygenerować PDF: ' + (err && err.message ? err.message : err));
+        alert('Błąd generowania PDF: ' + (err && err.message ? err.message : err));
       } finally {
         if (btnElement) { btnElement.disabled = false; btnElement.innerHTML = oldHtml; }
       }
@@ -1000,21 +1020,17 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
       const progressText = document.getElementById('batchProgressText');
       const percentText = document.getElementById('batchPercentText');
 
-      if (!count || count < 1 || count > 100) {
-        alert('Podaj liczbę od 1 do 100!');
-        return;
-      }
+      if (!count || count < 1 || count > 100) { alert('Podaj liczbę od 1 do 100!'); return; }
 
       btn.disabled = true;
       btn.classList.add('opacity-50');
       progressBox.classList.remove('hidden');
 
       const records = [];
-
       for (let i = 1; i <= count; i++) {
         const percent = Math.round((i / count) * 100);
         progressBar.style.width = percent + '%';
-        progressText.textContent = `Generowanie breloka ${i} z ${count}...`;
+        progressText.textContent = `Generowanie ${i} z ${count}...`;
         percentText.textContent = percent + '%';
 
         const res = await callApi('/api/create-tag', { line });
@@ -1036,20 +1052,12 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
 
       btn.disabled = false;
       btn.classList.remove('opacity-50');
-      progressText.textContent = `Ukończono! Wygenerowano ${records.length} sztuk.`;
+      progressText.textContent = `Gotowe! Wygenerowano ${records.length} szt.`;
     }
 
     function downloadCsv(data, filename) {
       const headers = ['Tag ID', 'PIN Aktywacyjny', 'Linia', 'Link Publiczny (NFC)', 'Link Admina', 'Data'];
-      const rows = data.map(r => [
-        `"${r.tagId}"`,
-        `"${r.pin}"`,
-        `"${r.line}"`,
-        `"${r.tagUrl}"`,
-        `"${r.adminUrl}"`,
-        `"${r.createdAt}"`
-      ]);
-
+      const rows = data.map(r => [`"${r.tagId}"`, `"${r.pin}"`, `"${r.line}"`, `"${r.tagUrl}"`, `"${r.adminUrl}"`, `"${r.createdAt}"`]);
       const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(e => e.join(';'))].join('\r\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -1062,39 +1070,22 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
 
     async function handleSetStatus(newStatus) {
       const tagId = document.getElementById('status_tagId').value.trim();
-      if (!tagId) {
-        alert('Podaj ID tagu!');
-        return;
-      }
+      if (!tagId) { alert('Podaj ID tagu!'); return; }
       await callApi('/api/update-tag', { tagId, status: newStatus });
     }
 
     async function handleUpdateLine() {
       const tagId = document.getElementById('update_tagId').value.trim();
       const line = document.querySelector('input[name="update_line"]:checked').value;
-
-      if (!tagId) {
-        alert('Podaj ID tagu!');
-        return;
-      }
-
+      if (!tagId) { alert('Podaj ID tagu!'); return; }
       await callApi('/api/update-tag', { tagId, line });
     }
 
     async function handleUpdateModes() {
       const tagId = document.getElementById('modes_tagId').value.trim();
-      const checkedBoxes = Array.from(document.querySelectorAll('input[name="custom_mode"]:checked'));
-      const modes = checkedBoxes.map(b => b.value);
-
-      if (!tagId) {
-        alert('Podaj ID tagu!');
-        return;
-      }
-      if (modes.length === 0) {
-        alert('Wybierz co najmniej 1 tryb!');
-        return;
-      }
-
+      const modes = Array.from(document.querySelectorAll('input[name="custom_mode"]:checked')).map(b => b.value);
+      if (!tagId) { alert('Podaj ID tagu!'); return; }
+      if (modes.length === 0) { alert('Wybierz co najmniej 1 tryb!'); return; }
       await callApi('/api/update-tag', { tagId, modes });
     }
 
@@ -1104,8 +1095,8 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
       navigator.clipboard.writeText(el.value).then(() => {
         if (btnElement) {
           const oldText = btnElement.textContent;
-          btnElement.textContent = '✓ Skopiowano';
-          setTimeout(() => { btnElement.textContent = oldText; }, 1800);
+          btnElement.textContent = '✓';
+          setTimeout(() => { btnElement.textContent = oldText; }, 1500);
         }
       });
     }
