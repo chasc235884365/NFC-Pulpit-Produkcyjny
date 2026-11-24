@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TapCraft NFC — Pulpit Produkcyjny v4.2</title>
+  <title>TapCraft NFC — Pulpit Produkcyjny v4.3</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -35,43 +35,43 @@
   <div class="w-full max-w-4xl space-y-6">
     
     <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-5">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-          <span class="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-            </svg>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+        <img src="svg/tapcraft-logo-poziome-na-ciemnym.svg" alt="TapCraft" class="h-10 w-auto object-contain"
+             onerror="this.outerHTML='<span class=\'text-2xl font-extrabold tracking-tight text-white\'>Tap<span class=\'text-sky-400\'>Craft</span></span>'">
+        <div class="hidden sm:block h-6 w-px bg-slate-800"></div>
+        <div>
+          <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Pulpit Produkcyjny v4.3
           </span>
-          TapCraft NFC
-        </h1>
-        <p class="text-sm text-slate-400 mt-1">Pulpit magazynowy v4.2 (Generowanie kart i QR po ID, Batch CSV, Web NFC)</p>
+          <p class="text-xs text-slate-400 mt-0.5">Generowanie tagów, karty aktywacyjne PDF, eksport CSV i Web NFC</p>
+        </div>
       </div>
     </header>
 
     <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
           <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
-          Połączenie z API Serwera (Mikrus / Cloudflare)
+          Połączenie z API Serwera (Mikrus + Cytrus)
         </h2>
-        <span id="saveHint" class="text-xs text-emerald-400 opacity-0 transition-opacity">Zapisano w pamięci</span>
+        <span id="saveHint" class="text-xs text-emerald-400 opacity-0 transition-opacity font-medium">Zapisano w pamięci</span>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">API Base URL</label>
-          <input type="text" id="apiUrl" value="https://franchise-skins-addressed-malpractice.trycloudflare.com" placeholder="https://franchise-skins-addressed-malpractice.trycloudflare.com"
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono">
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">API Base URL</label>
+          <input type="text" id="apiUrl" value="https://tapcraft.cytr.us" placeholder="https://tapcraft.cytr.us"
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono transition">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">X-Api-Secret</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">X-Api-Secret</label>
           <div class="relative">
             <input type="password" id="apiSecret" placeholder="Wklej API_SECRET z pliku .env..."
-              class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono">
-            <button type="button" id="toggleSecret" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+              class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono transition">
+            <button type="button" id="toggleSecret" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200" title="Pokaż / ukryj klucz">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -82,7 +82,7 @@
       </div>
     </section>
 
-    <div class="flex border-b border-slate-800 gap-2 overflow-x-auto pb-1">
+    <nav class="flex border-b border-slate-800 gap-1 overflow-x-auto pb-1">
       <button type="button" onclick="switchTab('create')" id="tab-create"
         class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-sky-400 text-sky-400 flex items-center gap-2 whitespace-nowrap transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -113,63 +113,64 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
         Własne Tryby
       </button>
-    </div>
+    </nav>
 
+    <!-- ZAKŁADKA 1: POJEDYNCZY TAG -->
     <div id="view-create" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <label class="block text-sm font-bold text-slate-200 mb-3">Wybierz Linię Produktową:</label>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <label class="cursor-pointer">
             <input type="radio" name="create_line" value="pet" class="peer sr-only" checked>
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
               <span class="block text-xl mb-1">🐾</span>
               <span class="text-xs font-bold block">Pet</span>
-              <span class="text-[10px] text-slate-500 font-mono">pet-xxxxxx</span>
+              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">pet-xxxxxx</span>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="create_line" value="safe" class="peer sr-only">
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
               <span class="block text-xl mb-1">🛡️</span>
               <span class="text-xs font-bold block">Safe</span>
-              <span class="text-[10px] text-slate-500 font-mono">safe-xxxxxx</span>
+              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">safe-xxxxxx</span>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="create_line" value="pro" class="peer sr-only">
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
               <span class="block text-xl mb-1">💼</span>
               <span class="text-xs font-bold block">Pro</span>
-              <span class="text-[10px] text-slate-500 font-mono">pro-xxxxxx</span>
+              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">pro-xxxxxx</span>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="create_line" value="home" class="peer sr-only">
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
               <span class="block text-xl mb-1">📶</span>
               <span class="text-xs font-bold block">Home</span>
-              <span class="text-[10px] text-slate-500 font-mono">home-xxxxxx</span>
+              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">home-xxxxxx</span>
             </div>
           </label>
           <label class="cursor-pointer col-span-2 sm:col-span-1">
             <input type="radio" name="create_line" value="all" class="peer sr-only">
-            <div class="p-3 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 transition">
+            <div class="p-3.5 text-center rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-950/40 peer-checked:text-sky-300 hover:border-slate-600 transition">
               <span class="block text-xl mb-1">⭐</span>
               <span class="text-xs font-bold block">All</span>
-              <span class="text-[10px] text-slate-500 font-mono">all-xxxxxx</span>
+              <span class="text-[10px] text-slate-500 font-mono block mt-0.5">all-xxxxxx</span>
             </div>
           </label>
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">Własny Tag ID (opcjonalne, serwer domyślnie doda prefiks linii):</label>
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Własny Tag ID (opcjonalne, serwer domyślnie doda prefiks linii):</label>
         <input type="text" id="create_tagId" placeholder="Zostaw puste, aby serwer nadał prefiks i losowe znaki"
-          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono transition">
       </div>
 
       <button type="button" onclick="handleCreateTag()"
-        class="w-full py-3.5 bg-sky-500 hover:bg-sky-400 active:scale-[0.99] text-slate-950 font-bold rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center justify-center gap-2">
+        class="w-full py-3.5 bg-sky-500 hover:bg-sky-400 active:scale-[0.99] text-slate-950 font-extrabold rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center justify-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         Wygeneruj nowy brelok magazynowy
       </button>
@@ -179,7 +180,7 @@
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Gotowy do zapisu NFC
           </span>
-          <span id="resTagBadge" class="text-xs font-mono bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md font-bold"></span>
+          <span id="resTagBadge" class="text-xs font-mono bg-slate-800 text-slate-200 px-3 py-1 rounded-lg font-bold border border-slate-700"></span>
         </div>
 
         <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
@@ -189,24 +190,24 @@
           </div>
           <div class="text-right">
             <span class="text-[11px] text-slate-400 block font-medium">6-cyfrowy PIN aktywacyjny:</span>
-            <span id="resPin" class="text-lg font-black text-sky-400 font-mono tracking-widest">------</span>
+            <span id="resPin" class="text-xl font-black text-sky-400 font-mono tracking-widest">------</span>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           <div class="space-y-3 md:col-span-2">
             <div>
-              <span class="text-xs text-slate-300 font-semibold block mb-0.5">Link Publiczny (ZAPISZ NA CHIP NFC / NADRUK):</span>
+              <span class="text-xs text-slate-300 font-semibold block mb-1">Link Publiczny (ZAPISZ NA CHIP NFC / NADRUK):</span>
               <div class="flex gap-2">
                 <input type="text" id="resTagUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-sky-300 font-mono">
-                <button type="button" onclick="copyField('resTagUrl', this)" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-xs font-bold rounded-lg text-slate-950 shrink-0 transition">Kopiuj</button>
+                <button type="button" onclick="copyField('resTagUrl', this)" class="px-3.5 py-1.5 bg-sky-500 hover:bg-sky-400 text-xs font-bold rounded-lg text-slate-950 shrink-0 transition">Kopiuj</button>
               </div>
             </div>
             <div>
-              <span class="text-xs text-amber-400/90 font-medium block mb-0.5">Link Admina (dla klienta po wpisaniu PIN-u):</span>
+              <span class="text-xs text-amber-400/90 font-medium block mb-1">Link Admina (dla klienta po wpisaniu PIN-u):</span>
               <div class="flex gap-2">
                 <input type="text" id="resAdminUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-amber-200 font-mono">
-                <button type="button" onclick="copyField('resAdminUrl', this)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200 shrink-0 transition">Kopiuj</button>
+                <button type="button" onclick="copyField('resAdminUrl', this)" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200 shrink-0 transition">Kopiuj</button>
               </div>
             </div>
 
@@ -242,7 +243,7 @@
       </div>
     </div>
 
-    <!-- Moduł Pobierania i Druku po ID -->
+    <!-- ZAKŁADKA 2: KARTA / DRUK PO ID -->
     <div id="view-fetchCard" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <h2 class="text-base font-bold text-white mb-1">Wygeneruj Kartę Aktywacyjną / QR dla Istniejącego Breloka</h2>
@@ -264,7 +265,7 @@
           <span class="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-sky-400"></span> Dane breloka z bazy
           </span>
-          <span id="fetchTagBadge" class="text-xs font-mono bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md font-bold"></span>
+          <span id="fetchTagBadge" class="text-xs font-mono bg-slate-800 text-slate-200 px-3 py-1 rounded-lg font-bold border border-slate-700"></span>
         </div>
 
         <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
@@ -274,24 +275,24 @@
           </div>
           <div class="text-right">
             <span class="text-[11px] text-slate-400 block font-medium">PIN aktywacyjny:</span>
-            <span id="fetchPin" class="text-lg font-black text-sky-400 font-mono tracking-widest">------</span>
+            <span id="fetchPin" class="text-xl font-black text-sky-400 font-mono tracking-widest">------</span>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           <div class="space-y-3 md:col-span-2">
             <div>
-              <span class="text-xs text-slate-300 font-semibold block mb-0.5">Link Publiczny (NFC / QR):</span>
+              <span class="text-xs text-slate-300 font-semibold block mb-1">Link Publiczny (NFC / QR):</span>
               <div class="flex gap-2">
                 <input type="text" id="fetchTagUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-sky-300 font-mono">
-                <button type="button" onclick="copyField('fetchTagUrl', this)" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-xs font-bold rounded-lg text-slate-950 shrink-0 transition">Kopiuj</button>
+                <button type="button" onclick="copyField('fetchTagUrl', this)" class="px-3.5 py-1.5 bg-sky-500 hover:bg-sky-400 text-xs font-bold rounded-lg text-slate-950 shrink-0 transition">Kopiuj</button>
               </div>
             </div>
             <div>
-              <span class="text-xs text-amber-400/90 font-medium block mb-0.5">Link Admina:</span>
+              <span class="text-xs text-amber-400/90 font-medium block mb-1">Link Admina:</span>
               <div class="flex gap-2">
                 <input type="text" id="fetchAdminUrl" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-amber-200 font-mono">
-                <button type="button" onclick="copyField('fetchAdminUrl', this)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200 shrink-0 transition">Kopiuj</button>
+                <button type="button" onclick="copyField('fetchAdminUrl', this)" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-slate-200 shrink-0 transition">Kopiuj</button>
               </div>
             </div>
 
@@ -327,25 +328,26 @@
       </div>
     </div>
 
+    <!-- ZAKŁADKA 3: PRODUKCJA SERYJNA (CSV) -->
     <div id="view-batch" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
         <h2 class="text-base font-bold text-white mb-1">Generowanie Hurtowe do Pliku CSV</h2>
-        <p class="text-xs text-slate-400">Wygeneruj serię breloków dla partii produkcyjnej. Wszystkie identyfikatory, kody PIN oraz linki zostaną przygotowane i wyeksportowane do pliku arkusza.</p>
+        <p class="text-xs text-slate-400">Wygeneruj serię breloków dla partii produkcyjnej. Wszystkie identyfikatory, kody PIN oraz linki zostaną wyeksportowane do arkusza CSV.</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Wybierz Linię:</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Wybierz Linię:</label>
           <select id="batch_line" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 font-mono">
-            <option value="pet">Pet (pet-xxxxxx)</option>
-            <option value="safe">Safe (safe-xxxxxx)</option>
-            <option value="pro">Pro (pro-xxxxxx)</option>
-            <option value="home">Home (home-xxxxxx)</option>
-            <option value="all">All (all-xxxxxx)</option>
+            <option value="pet">Pet — zwierzak (pet-xxxxxx)</option>
+            <option value="safe">Safe — zguba + ICE (safe-xxxxxx)</option>
+            <option value="pro">Pro — wizytówka, hub, pay, link (pro-xxxxxx)</option>
+            <option value="home">Home — Wi-Fi (home-xxxxxx)</option>
+            <option value="all">All — wszystkie 8 trybów (all-xxxxxx)</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Liczba sztuk w serii:</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Liczba sztuk w serii:</label>
           <input type="number" id="batch_count" value="10" min="1" max="100"
             class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 font-mono">
         </div>
@@ -368,9 +370,10 @@
       </div>
     </div>
 
+    <!-- ZAKŁADKA 4: ZARZĄDZAJ STATUSEM -->
     <div id="view-status" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">ID Tagu:</label>
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">ID Tagu:</label>
         <input type="text" id="status_tagId" placeholder="Wklej tagId (np. pet-9x2m4q)..."
           class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
       </div>
@@ -404,9 +407,10 @@
       </div>
     </div>
 
+    <!-- ZAKŁADKA 5: ZMIEŃ LINIĘ -->
     <div id="view-changeLine" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">ID Modyfikowanego Tagu:</label>
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">ID Modyfikowanego Tagu:</label>
         <input type="text" id="update_tagId" placeholder="Wklej tagId..."
           class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
       </div>
@@ -459,9 +463,10 @@
       </button>
     </div>
 
+    <!-- ZAKŁADKA 6: WŁASNE TRYBY -->
     <div id="view-customModes" class="tab-content hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1">ID Modyfikowanego Tagu:</label>
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">ID Modyfikowanego Tagu:</label>
         <input type="text" id="modes_tagId" placeholder="Wklej tagId..."
           class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono">
       </div>
@@ -511,6 +516,7 @@
       </button>
     </div>
 
+    <!-- TERMINAL LOGÓW HTTP -->
     <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
       <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -543,7 +549,12 @@
     function loadSavedConfig() {
       const savedUrl = localStorage.getItem('tapcraft_api_url');
       const savedSecret = localStorage.getItem('tapcraft_api_secret');
-      if (savedUrl) apiUrlInput.value = savedUrl;
+      // Automatyczna aktualizacja jeśli w pamięci został stary tymczasowy adres trycloudflare
+      if (savedUrl && !savedUrl.includes('trycloudflare.com')) {
+        apiUrlInput.value = savedUrl;
+      } else {
+        apiUrlInput.value = 'https://tapcraft.cytr.us';
+      }
       if (savedSecret) apiSecretInput.value = savedSecret;
     }
 
@@ -785,15 +796,37 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
       return dataUrl;
     }
 
+    // Ładuje oryginalny plik SVG z folderu svg/ jako bezpieczny Data URL dla html2canvas
+    async function loadLogoAsDataUrl(relPath) {
+      try {
+        const res = await fetch(relPath);
+        if (!res.ok) return null;
+        const svgText = await res.text();
+        return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgText)));
+      } catch (e) {
+        return null;
+      }
+    }
+
     const CARD_BRAND = 'TapCraft';
-    const CARD_W = 560, CARD_H = 794;   // proporcje A5/A6 (1 : 1,414)
+    const CARD_W = 560, CARD_H = 794;   // proporcje A5 (148 x 210 mm)
 
     function buildCardMarkup(d) {
       const hasPin = /^\d{4,8}$/.test(d.pinRaw);
       const pinBand = hasPin
-        ? `<div class="tc-band-txt"><b>Ekran z prośbą o PIN?</b><span>Jeśli po zbliżeniu telefonu do breloka pojawi się ekran aktywacji, wpisz ten kod:</span></div>
+        ? `<div class="tc-band-txt">
+             <b>Ekran z prośbą o PIN?</b>
+             <span>Jeśli po zbliżeniu telefonu pojawi się ekran aktywacji, wpisz ten kod:</span>
+           </div>
            <div class="tc-pin">${d.pinRaw.split('').map(c => '<i>' + c + '</i>').join('')}</div>`
-        : `<div class="tc-band-txt tc-band-wide"><b>PIN nie jest potrzebny.</b><span>Ten brelok jest już aktywny — wystarczy otworzyć panel z kroku 1.</span></div>`;
+        : `<div class="tc-band-txt tc-band-wide">
+             <b>PIN nie jest potrzebny.</b>
+             <span>Ten brelok jest już aktywny — wystarczy otworzyć panel z kroku 1.</span>
+           </div>`;
+
+      const brandHtml = d.logoDataUrl
+        ? `<img src="${d.logoDataUrl}" alt="${CARD_BRAND}" style="height:36px;width:auto;display:block;">`
+        : `<span style="font-size:26px;font-weight:800;letter-spacing:-0.4px;color:#0f172a;">Tap<span style="color:#2563eb;">Craft</span></span>`;
 
       return `
 <style>
@@ -801,41 +834,44 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
   .tc { position: relative; width: ${CARD_W}px; height: ${CARD_H}px; overflow: hidden; background: #ffffff; color: #0f172a;
         font-family: 'Manrope', 'Segoe UI', Arial, sans-serif; }
   .tc .a { position: absolute; }
-  .tc-brand { left: 44px; top: 40px; font-size: 26px; font-weight: 800; letter-spacing: -0.4px; line-height: 1; color: #0f172a; }
-  .tc-id { right: 44px; top: 47px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11.5px; font-weight: 700; letter-spacing: 0.4px; color: #64748b; line-height: 1; }
-  .tc-title { left: 44px; top: 96px; width: 472px; font-size: 32px; font-weight: 800; letter-spacing: -0.6px; line-height: 38px; color: #0f172a; }
-  .tc-lead { left: 44px; top: 142px; width: 472px; font-size: 14.5px; font-weight: 500; line-height: 21px; color: #475569; }
 
-  .tc-panel { left: 44px; top: 190px; width: 472px; height: 244px; background: #f1f5f9; border-radius: 20px; }
-  .tc-qr { left: 28px; top: 30px; width: 184px; height: 184px; background: #ffffff; border-radius: 14px; }
-  .tc-qr img { position: absolute; left: 14px; top: 14px; width: 156px; height: 156px; display: block; }
-  .tc-s1 { left: 238px; top: 30px; width: 206px; }
+  .tc-brand { left: 44px; top: 36px; }
+  .tc-id { right: 44px; top: 43px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; font-weight: 700;
+           letter-spacing: 0.4px; color: #475569; background: #f1f5f9; padding: 5px 10px; border-radius: 6px; line-height: 1; }
 
-  .tc-n { display: block; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11.5px; font-weight: 700; letter-spacing: 1.2px; line-height: 14px; color: #0284c7; margin-bottom: 6px; }
-  .tc-h { display: block; font-size: 17px; font-weight: 800; letter-spacing: -0.2px; line-height: 22px; color: #0f172a; margin-bottom: 6px; }
-  .tc-p { display: block; font-size: 12.5px; font-weight: 500; line-height: 18px; color: #475569; }
-  .tc-or { display: block; margin-top: 12px; font-size: 11px; font-weight: 700; line-height: 14px; color: #0f172a; }
-  .tc-link { display: block; margin-top: 4px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 9px; font-weight: 500; line-height: 12.5px; color: #0369a1; word-break: break-all; text-decoration: underline; }
+  .tc-title { left: 44px; top: 100px; width: 472px; font-size: 31px; font-weight: 800; letter-spacing: -0.6px; line-height: 36px; color: #0f172a; }
+  .tc-lead { left: 44px; top: 144px; width: 472px; font-size: 14px; font-weight: 500; line-height: 20px; color: #475569; }
 
-  .tc-s2 { left: 44px; top: 462px; width: 224px; }
-  .tc-s3 { left: 292px; top: 462px; width: 224px; }
+  .tc-panel { left: 44px; top: 192px; width: 472px; height: 244px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 20px; }
+  .tc-qr { left: 26px; top: 28px; width: 184px; height: 184px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; }
+  .tc-qr img { position: absolute; left: 13px; top: 13px; width: 156px; height: 156px; display: block; }
+  .tc-s1 { left: 234px; top: 28px; width: 212px; }
 
-  .tc-band { left: 44px; top: 588px; width: 472px; height: 92px; background: #0f172a; border-radius: 18px; }
-  .tc-band-txt { position: absolute; left: 24px; top: 0; width: 232px; height: 92px; display: flex; flex-direction: column; justify-content: center; }
-  .tc-band-txt b { display: block; font-size: 14px; font-weight: 800; line-height: 18px; color: #ffffff; margin-bottom: 3px; }
-  .tc-band-txt span { display: block; font-size: 11px; font-weight: 500; line-height: 15px; color: #cbd5e1; }
-  .tc-band-wide { width: 424px; }
-  .tc-pin { position: absolute; right: 22px; top: 0; height: 92px; width: 200px; text-align: right; font-size: 0; line-height: 0; }
-  .tc-pin i { display: inline-block; font-style: normal; width: 29px; margin-left: 3px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 29px; font-weight: 700; line-height: 92px; text-align: center; color: #38bdf8; }
+  .tc-n { display: block; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; line-height: 14px; color: #0284c7; margin-bottom: 5px; }
+  .tc-h { display: block; font-size: 16.5px; font-weight: 800; letter-spacing: -0.2px; line-height: 21px; color: #0f172a; margin-bottom: 6px; }
+  .tc-p { display: block; font-size: 12px; font-weight: 500; line-height: 17.5px; color: #475569; }
+  .tc-or { display: block; margin-top: 12px; font-size: 10.5px; font-weight: 700; line-height: 14px; color: #0f172a; }
+  .tc-link { display: block; margin-top: 4px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 8.8px; font-weight: 500; line-height: 12px; color: #0369a1; word-break: break-all; text-decoration: underline; }
 
-  .tc-rule { left: 44px; top: 706px; width: 472px; height: 1px; background: #e2e8f0; }
-  .tc-warn { left: 44px; top: 718px; width: 472px; font-size: 11px; font-weight: 500; line-height: 16px; color: #64748b; }
+  .tc-s2 { left: 44px; top: 462px; width: 222px; }
+  .tc-s3 { left: 294px; top: 462px; width: 222px; }
+
+  .tc-band { left: 44px; top: 586px; width: 472px; height: 92px; background: #0f172a; border-radius: 18px; }
+  .tc-band-txt { position: absolute; left: 22px; top: 0; width: 234px; height: 92px; display: flex; flex-direction: column; justify-content: center; }
+  .tc-band-txt b { display: block; font-size: 13.5px; font-weight: 800; line-height: 18px; color: #ffffff; margin-bottom: 3px; }
+  .tc-band-txt span { display: block; font-size: 10.8px; font-weight: 500; line-height: 14.5px; color: #cbd5e1; }
+  .tc-band-wide { width: 428px; }
+  .tc-pin { position: absolute; right: 20px; top: 0; height: 92px; width: 202px; text-align: right; font-size: 0; line-height: 0; }
+  .tc-pin i { display: inline-block; font-style: normal; width: 28px; margin-left: 4px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 28px; font-weight: 700; line-height: 92px; text-align: center; color: #38bdf8; }
+
+  .tc-rule { left: 44px; top: 704px; width: 472px; height: 1px; background: #e2e8f0; }
+  .tc-warn { left: 44px; top: 716px; width: 472px; font-size: 10.8px; font-weight: 500; line-height: 15.5px; color: #64748b; }
   .tc-warn b { font-weight: 700; color: #334155; }
-  .tc-foot { left: 44px; top: 762px; width: 472px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.3px; line-height: 12px; color: #94a3b8; }
+  .tc-foot { left: 44px; top: 762px; width: 472px; font-size: 10px; font-weight: 600; letter-spacing: 0.3px; line-height: 12px; color: #94a3b8; display: flex; justify-content: space-between; }
 </style>
 <div class="tc">
-  <div class="a tc-brand">${CARD_BRAND}</div>
-  <div class="a tc-id">Brelok #${d.tagId}</div>
+  <div class="a tc-brand">${brandHtml}</div>
+  <div class="a tc-id">ID: #${d.tagId}</div>
 
   <div class="a tc-title">Aktywacja Twojego breloka</div>
   <div class="a tc-lead">To Twoja karta dostępu. Trzy proste kroki i brelok jest gotowy.</div>
@@ -845,16 +881,16 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
     <div class="a tc-s1">
       <span class="tc-n">KROK 01</span>
       <span class="tc-h">Zeskanuj kod QR</span>
-      <span class="tc-p">Użyj aparatu w telefonie. Otworzy się Twój panel, w którym ustawiasz brelok.</span>
-      <span class="tc-or">Nie możesz zeskanować? Otwórz link:</span>
+      <span class="tc-p">Użyj aparatu w telefonie. Otworzy się panel, w którym ustawisz swój brelok.</span>
+      <span class="tc-or">Lub wpisz adres ręcznie:</span>
       <span class="tc-link">${d.adminUrl}</span>
     </div>
   </div>
 
   <div class="a tc-s2">
     <span class="tc-n">KROK 02</span>
-    <span class="tc-h">Ustaw swój brelok</span>
-    <span class="tc-p">W panelu wybierz funkcję (np. wizytówka, zwierzak, Wi-Fi), uzupełnij dane i kliknij „Zapisz zmiany”.</span>
+    <span class="tc-h">Wybierz funkcję i zapisz</span>
+    <span class="tc-p">Wybierz tryb (np. wizytówka, zwierzak, Wi-Fi), uzupełnij dane i kliknij „Zapisz zmiany”.</span>
   </div>
   <div class="a tc-s3">
     <span class="tc-n">KROK 03</span>
@@ -866,7 +902,7 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
 
   <div class="a tc-rule"></div>
   <div class="a tc-warn"><b>Zachowaj tę kartę lub zapisz link w telefonie</b> — to jedyny sposób, by wrócić do panelu. Link i kod QR dają dostęp do edycji breloka, więc nie udostępniaj ich innym osobom.</div>
-  <div class="a tc-foot">${CARD_BRAND} · Brelok NFC</div>
+  <div class="a tc-foot"><span>${CARD_BRAND} · Inteligentne breloki NFC</span><span>tapcraft.cytr.us</span></div>
 </div>`;
     }
 
@@ -884,17 +920,20 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
         const adminUrlRaw = document.getElementById(adminUrlId).value.trim();
         if (!adminUrlRaw) { alert('Brak linku do panelu administracyjnego dla tego breloka.'); return; }
 
+        const logoDataUrl = await loadLogoAsDataUrl('svg/tapcraft-logo-poziome-na-jasnym.svg');
+
         const html = buildCardMarkup({
           tagId: escapeHtml(tagIdRaw),
           pin: escapeHtml(pinRaw),
           pinRaw: pinRaw,
           qr: makeHiResQr(adminUrlRaw, 624),
-          adminUrl: escapeHtml(adminUrlRaw)
+          adminUrl: escapeHtml(adminUrlRaw),
+          logoDataUrl
         });
 
         try {
           await Promise.all([
-            document.fonts.load('800 32px Manrope'),
+            document.fonts.load('800 31px Manrope'),
             document.fonts.load('500 12px Manrope'),
             document.fonts.load('700 12px "JetBrains Mono"'),
             document.fonts.load('500 9px "JetBrains Mono"')
