@@ -3,27 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TapCraft NFC — Studio Produkcyjne v5.1</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src https: http://localhost:* http://127.0.0.1:*; object-src 'none'; base-uri 'none'">
+  <title>TapCraft NFC — Studio Produkcyjne v5.2</title>
+  <link rel="stylesheet" href="vendor/tailwind.css">
+  <script src="vendor/qrcode.min.js"></script>
+  <script src="vendor/html2canvas.min.js"></script>
+  <script src="vendor/jspdf.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          }
-        }
-      }
-    }
-  </script>
   <style>
     body { background-color: #060911; color: #f1f5f9; }
     .panel { background: #0d1322; border: 1px solid #1e293b; }
@@ -48,7 +36,7 @@
 
       <div class="flex items-center gap-3">
         <span id="saveHint" class="text-xs font-medium text-emerald-400 opacity-0 transition-opacity duration-300">✓ Zapisano</span>
-        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-400">v5.1 · Mikrus VPS</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-400">v5.2 · Mikrus VPS</span>
       </div>
     </header>
 
@@ -63,7 +51,7 @@
         <div class="md:col-span-7">
           <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Klucz Autoryzacji (X-Api-Secret)</label>
           <div class="relative">
-            <input type="password" id="apiSecret" placeholder="Wklej API_SECRET z pliku .env na serwerze..."
+            <input type="password" id="apiSecret" autocomplete="off" placeholder="Wklej API_SECRET (nie jest zapamiętywany)"
               class="field w-full rounded-xl pl-3.5 pr-11 py-2.5 text-sm text-slate-100 font-mono">
             <button type="button" id="toggleSecret" class="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300 transition" title="Pokaż / ukryj klucz">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,6 +60,10 @@
               </svg>
             </button>
           </div>
+        </div>
+        <div class="md:col-span-12">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Klucz odczytu linków admina (X-Api-Admin) <span class="normal-case font-medium text-slate-500">— opcjonalny, tylko do zakładki „Pobierz kartę"</span></label>
+          <input type="password" id="apiAdmin" autocomplete="off" placeholder="API_ADMIN_SECRET (nie jest zapamiętywany)" class="field w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono">
         </div>
       </div>
     </section>
@@ -246,6 +238,10 @@
                 <span>Instrukcja SMS</span>
               </button>
             </div>
+            <button type="button" onclick="writeDirectNfc('resTagUrl', this, true)"
+              class="w-full mt-2.5 py-2.5 px-3 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+              <span>🔒 Zapisz i zablokuj tag (nieodwracalne)</span>
+            </button>
           </div>
 
           <div class="lg:col-span-4 flex flex-col items-center justify-center p-5 bg-[#070b14] border border-slate-800 rounded-xl">
@@ -331,6 +327,10 @@
                 <span>Instrukcja SMS</span>
               </button>
             </div>
+            <button type="button" onclick="writeDirectNfc('fetchTagUrl', this, true)"
+              class="w-full mt-2.5 py-2.5 px-3 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+              <span>🔒 Zapisz i zablokuj tag (nieodwracalne)</span>
+            </button>
           </div>
 
           <div class="lg:col-span-4 flex flex-col items-center justify-center p-5 bg-[#070b14] border border-slate-800 rounded-xl">
@@ -357,11 +357,11 @@
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1.5">Linia produktowa:</label>
           <select id="batch_line" class="field w-full rounded-xl px-3.5 py-3 text-sm text-slate-100 font-mono">
-            <option value="pet">Pet — zwierzak (pet-xxxxxx)</option>
-            <option value="safe">Safe — zguba + ICE (safe-xxxxxx)</option>
-            <option value="pro">Pro — wizytówka, hub, pay, link (pro-xxxxxx)</option>
-            <option value="home">Home — Wi-Fi (home-xxxxxx)</option>
-            <option value="all">All — wszystkie 8 trybów (all-xxxxxx)</option>
+            <option value="pet">Pet — zwierzak (pet-xxxxxxxx)</option>
+            <option value="safe">Safe — zguba + ICE (safe-xxxxxxxx)</option>
+            <option value="pro">Pro — wizytówka, hub, pay, link (pro-xxxxxxxx)</option>
+            <option value="home">Home — Wi-Fi (home-xxxxxxxx)</option>
+            <option value="all">All — wszystkie 8 trybów (all-xxxxxxxx)</option>
           </select>
         </div>
         <div>
@@ -370,6 +370,8 @@
             class="field w-full rounded-xl px-3.5 py-3 text-sm text-slate-100 font-mono">
         </div>
       </div>
+
+      <label class="flex items-start gap-2.5 text-xs text-slate-300 cursor-pointer"><input type="checkbox" id="batch_withAdmin" class="mt-0.5"><span>Dołącz kolumnę „Link Admina" do CSV <span class="text-amber-400">(wrażliwe: daje pełny dostęp do breloków; nie wysyłaj ani nie zostawiaj tego pliku)</span></span></label>
 
       <button type="button" id="btnRunBatch" onclick="handleBatchGenerate()"
         class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition flex items-center justify-center gap-2">
@@ -553,24 +555,21 @@
 
     function loadSavedConfig() {
       const savedUrl = localStorage.getItem('tapcraft_api_url');
-      const savedSecret = localStorage.getItem('tapcraft_api_secret');
+      localStorage.removeItem('tapcraft_api_secret'); // klucz nie jest już zapamiętywany w przeglądarce
       if (savedUrl && !savedUrl.includes('trycloudflare.com')) {
         apiUrlInput.value = savedUrl;
       } else {
         apiUrlInput.value = 'https://tapcraft.cytr.us';
       }
-      if (savedSecret) apiSecretInput.value = savedSecret;
     }
 
     function saveConfig() {
       localStorage.setItem('tapcraft_api_url', apiUrlInput.value.trim());
-      localStorage.setItem('tapcraft_api_secret', apiSecretInput.value.trim());
       saveHint.classList.remove('opacity-0');
       setTimeout(() => saveHint.classList.add('opacity-0'), 1500);
     }
 
     apiUrlInput.addEventListener('input', saveConfig);
-    apiSecretInput.addEventListener('input', saveConfig);
 
     document.getElementById('toggleSecret').addEventListener('click', () => {
       apiSecretInput.type = apiSecretInput.type === 'password' ? 'text' : 'password';
@@ -621,7 +620,7 @@
       return String(str || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
-    async function callApi(endpoint, body) {
+    async function callApi(endpoint, body, extraHeaders = {}) {
       const baseUrl = apiUrlInput.value.trim().replace(/\/+$/, '');
       const secret = apiSecretInput.value.trim();
 
@@ -636,7 +635,8 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Api-Secret': secret
+            'X-Api-Secret': secret,
+            ...extraHeaders
           },
           body: JSON.stringify(body)
         });
@@ -712,19 +712,21 @@
       const tagId = document.getElementById('fetch_tagId').value.trim();
       if (!tagId) { alert('Podaj ID breloka!'); return; }
 
-      const res = await callApi('/api/get-tag', { tagId });
+      const adminKey = document.getElementById('apiAdmin').value.trim();
+      const res = await callApi('/api/get-tag', { tagId }, adminKey ? { 'X-Api-Admin': adminKey } : {});
       if (!res) return;
 
       if (res.ok && res.data && res.data.tagId) {
         fetchPublicUrl = res.data.tagUrl;
-        fetchAdminUrl = res.data.adminUrl;
+        fetchAdminUrl = res.data.adminUrl || '';
 
         document.getElementById('fetchResultBox').classList.remove('hidden');
         document.getElementById('fetchTagBadge').textContent = '#' + res.data.tagId;
         document.getElementById('fetchStatus').textContent = (res.data.status || 'active').toUpperCase();
         document.getElementById('fetchPin').textContent = res.data.claimPin || 'AKTYWNY';
         document.getElementById('fetchTagUrl').value = res.data.tagUrl;
-        document.getElementById('fetchAdminUrl').value = res.data.adminUrl;
+        document.getElementById('fetchAdminUrl').value = res.data.adminUrl || '';
+        if (res.data.adminLocked) alert('Serwer wymaga klucza X-Api-Admin, żeby pokazać link admina. Wpisz go w górnej sekcji i pobierz ponownie (PIN i link publiczny widać już teraz).');
 
         renderQrMode('public', 'fetchQrCode', 'btnFetchQrPublic', 'btnFetchQrAdmin');
       } else {
@@ -733,7 +735,7 @@
       }
     }
 
-    async function writeDirectNfc(inputElementId, btnElement) {
+    async function writeDirectNfc(inputElementId, btnElement, lock = false) {
       const tagUrl = document.getElementById(inputElementId).value.trim();
       const originalHtml = btnElement.innerHTML;
 
@@ -741,14 +743,29 @@
         alert('Przeglądarka nie obsługuje Web NFC (wymagany Chrome na Androidzie).');
         return;
       }
+      if (!tagUrl) { alert('Brak linku do zapisania.'); return; }
+      if (lock) {
+        if (!('makeReadOnly' in NDEFReader.prototype)) {
+          alert('Ta przeglądarka nie potrafi blokować tagów (wymagany Chrome 100+ na Androidzie). Zapisz zwykłym przyciskiem i zablokuj tag aplikacją NFC Tools.');
+          return;
+        }
+        if (!confirm('ZAPIS + BLOKADA NA ZAWSZE\n\nTag zostanie zapisany linkiem:\n' + tagUrl + '\n\ni zablokowany. Nie da się go już zmienić ani zapisać ponownie.\n\nZalecenie: najpierw zrób zwykły „Zapisz NFC" i sprawdź skanem telefonu, że link działa.\n\nKontynuować?')) return;
+      }
 
       try {
         const ndef = new NDEFReader();
+        btnElement.innerHTML = '<span>Przyłóż tag do telefonu…</span>';
         await ndef.write({ records: [{ recordType: 'url', data: tagUrl }] });
-        btnElement.innerHTML = '<span>✓ Zapisano!</span>';
-        setTimeout(() => { btnElement.innerHTML = originalHtml; }, 2200);
+        if (lock) {
+          btnElement.innerHTML = '<span>Trzymaj tag przy telefonie – blokuję…</span>';
+          await ndef.makeReadOnly();
+        }
+        btnElement.innerHTML = lock ? '<span>🔒 Zapisano i zablokowano!</span>' : '<span>✓ Zapisano!</span>';
+        logConsole('NFC', tagUrl, { lock }, 200, lock ? 'zapisano i zablokowano' : 'zapisano');
+        setTimeout(() => { btnElement.innerHTML = originalHtml; }, 2600);
       } catch (err) {
-        alert('Błąd zapisu NFC: ' + err.message);
+        btnElement.innerHTML = originalHtml;
+        alert('Błąd NFC: ' + err.message + (lock ? '\n\nJeśli zapis się udał, a blokada nie, tag nadal da się zapisać. Spróbuj ponownie „Zapisz i zablokuj".' : ''));
       }
     }
 
@@ -1005,7 +1022,7 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
       }
 
       if (records.length > 0) {
-        downloadCsv(records, `tapcraft_batch_${line}_${Date.now()}.csv`);
+        downloadCsv(records, `tapcraft_batch_${line}_${Date.now()}.csv`, document.getElementById('batch_withAdmin').checked);
       }
 
       btn.disabled = false;
@@ -1013,9 +1030,10 @@ Nie udostępniaj tego linku innym osobom — daje dostęp do edycji breloka.`;
       progressText.textContent = `Gotowe! Wygenerowano ${records.length} szt.`;
     }
 
-    function downloadCsv(data, filename) {
-      const headers = ['Tag ID', 'PIN Aktywacyjny', 'Linia', 'Link Publiczny (NFC)', 'Link Admina', 'Data'];
-      const rows = data.map(r => [`"${r.tagId}"`, `"${r.pin}"`, `"${r.line}"`, `"${r.tagUrl}"`, `"${r.adminUrl}"`, `"${r.createdAt}"`]);
+    function downloadCsv(data, filename, withAdmin = false) {
+      const headers = ['Tag ID', 'PIN Aktywacyjny', 'Linia', 'Link Publiczny (NFC)'].concat(withAdmin ? ['Link Admina'] : [], ['Data']);
+      const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      const rows = data.map(r => [r.tagId, r.pin, r.line, r.tagUrl].concat(withAdmin ? [r.adminUrl] : [], [r.createdAt]).map(q));
       const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(e => e.join(';'))].join('\r\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
